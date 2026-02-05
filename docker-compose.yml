@@ -1,24 +1,20 @@
+# Docker Compose for Trajectory Sandbox with OpenClaw
+#
+# This compose file runs:
+# 1. OpenClaw gateway (from trajectoryRL/openclaw fork)
+# 2. Mock tools server (our FastAPI server)
+#
+# Prerequisites:
+# - Run ./scripts/setup_openclaw_fork.sh first
+# - Set ANTHROPIC_API_KEY (or other model provider key)
+
 version: "3.8"
 
 services:
-  # OpenClaw Gateway
-  openclaw:
-    image: ghcr.io/anthropics/anthropic-quickstarts:computer-use-demo-latest
-    # NOTE: Replace with actual OpenClaw image when available
-    # For now, we'll use a placeholder - you may need to build/find the real image
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./workspace:/workspace
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - WORKSPACE_PATH=/workspace
-    depends_on:
-      - mock-tools
-    networks:
-      - sandbox-net
-
-  # Mock Tool Server (all tools in one for simplicity)
+  # ==========================================================================
+  # Mock Tools Server
+  # Serves deterministic tool responses from fixtures
+  # ==========================================================================
   mock-tools:
     build:
       context: .
@@ -30,10 +26,66 @@ services:
       - ./logs:/logs
     environment:
       - FIXTURES_PATH=/fixtures
+      - SCENARIO=inbox_triage
       - LOG_PATH=/logs
     networks:
       - sandbox-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ==========================================================================
+  # OpenClaw Gateway (from trajectoryRL/openclaw fork)
+  # Build from local clone after running setup_openclaw_fork.sh
+  # ==========================================================================
+  openclaw-gateway:
+    build:
+      context: ./openclaw
+      dockerfile: Dockerfile
+    ports:
+      - "18789:18789"
+    volumes:
+      # Workspace with AGENTS.md
+      - ./workspace:/workspace
+      # Config directory
+      - openclaw-config:/home/node/.openclaw
+      # Our sandbox config (mounted read-only)
+      - ./config/openclaw.sandbox.json:/home/node/.openclaw/openclaw.json:ro
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - WORKSPACE_PATH=/workspace
+    depends_on:
+      mock-tools:
+        condition: service_healthy
+    networks:
+      - sandbox-net
+    # Keep gateway running
+    restart: unless-stopped
+
+  # ==========================================================================
+  # OpenClaw CLI (for running commands)
+  # ==========================================================================
+  openclaw-cli:
+    build:
+      context: ./openclaw
+      dockerfile: Dockerfile
+    volumes:
+      - ./workspace:/workspace
+      - openclaw-config:/home/node/.openclaw
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    entrypoint: ["node", "dist/index.js"]
+    networks:
+      - sandbox-net
+    profiles:
+      - cli  # Only run when explicitly requested
 
 networks:
   sandbox-net:
     driver: bridge
+
+volumes:
+  openclaw-config:

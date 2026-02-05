@@ -1,0 +1,25 @@
+{
+  "agent": {
+    "model": "anthropic/claude-sonnet-4"
+  },
+  "plugins": {
+    "entries": {
+      "trajectory-sandbox-tools": {
+        "enabled": true,
+        "config": {
+          "mockServerUrl": "http://host.docker.internal:3001",
+          "scenario": "inbox_triage"
+        }
+      }
+    }
+  },
+  "tools": {
+    "deny": ["exec", "process", "browser", "canvas", "nodes", "cron", "gateway", "web_search", "web_fetch"],
+    "allow": ["inbox_list", "email_draft", "email_send", "calendar_read", "memory_read", "memory_write"]
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/workspace"
+    }
+  }
+}
