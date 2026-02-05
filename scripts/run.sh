@@ -72,4 +72,4 @@ echo "Press Ctrl+C to stop"
 echo ""
 
 # Build and run
-docker-compose up --build
+docker compose up --build
