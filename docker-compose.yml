@@ -1,12 +1,12 @@
-# Docker Compose for Trajectory Sandbox with OpenClaw
+# Docker Compose for Trajectory Sandbox
 #
-# This compose file runs:
-# 1. OpenClaw gateway (from trajectoryRL/openclaw fork)
-# 2. Mock tools server (our FastAPI server)
+# Runs OpenClaw gateway with mock tools for AGENTS.md evaluation
 #
-# Prerequisites:
-# - Run ./scripts/setup_openclaw_fork.sh first
-# - Set ANTHROPIC_API_KEY (or other model provider key)
+# Usage:
+#   export ANTHROPIC_API_KEY="sk-ant-..."
+#   docker-compose up --build
+#
+# Dashboard: http://localhost:18789/?token=sandbox-token-12345
 
 version: "3.8"
 
@@ -37,55 +37,39 @@ services:
       retries: 3
 
   # ==========================================================================
-  # OpenClaw Gateway (from trajectoryRL/openclaw fork)
-  # Build from local clone after running setup_openclaw_fork.sh
+  # OpenClaw Gateway (Trajectory Sandbox Edition)
+  # Built from ../openclaw with pre-configured settings
   # ==========================================================================
   openclaw-gateway:
     build:
-      context: ./openclaw
-      dockerfile: Dockerfile
+      context: ../openclaw
+      dockerfile: Dockerfile.trajectory-sandbox
     ports:
       - "18789:18789"
     volumes:
       # Workspace with AGENTS.md
       - ./workspace:/workspace
-      # Config directory
-      - openclaw-config:/home/node/.openclaw
-      # Our sandbox config (mounted read-only)
-      - ./config/openclaw.sandbox.json:/home/node/.openclaw/openclaw.json:ro
     environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Model provider API key (required)
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - WORKSPACE_PATH=/workspace
+      # Gateway token for dashboard access
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-sandbox-token-12345}
+    extra_hosts:
+      # Allow container to reach mock-tools via host.docker.internal
+      - "host.docker.internal:host-gateway"
     depends_on:
       mock-tools:
         condition: service_healthy
     networks:
       - sandbox-net
-    # Keep gateway running
     restart: unless-stopped
-
-  # ==========================================================================
-  # OpenClaw CLI (for running commands)
-  # ==========================================================================
-  openclaw-cli:
-    build:
-      context: ./openclaw
-      dockerfile: Dockerfile
-    volumes:
-      - ./workspace:/workspace
-      - openclaw-config:/home/node/.openclaw
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    entrypoint: ["node", "dist/index.js"]
-    networks:
-      - sandbox-net
-    profiles:
-      - cli  # Only run when explicitly requested
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   sandbox-net:
     driver: bridge
-
-volumes:
-  openclaw-config:

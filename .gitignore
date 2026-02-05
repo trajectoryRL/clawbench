@@ -215,9 +215,6 @@ logs/*
 !logs/.gitkeep
 *.jsonl
 
-# OpenClaw fork clone (cloned by setup script)
-openclaw/
-
 # Config with secrets
 config/*.json
 !config/*.example.json
