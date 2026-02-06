@@ -39,7 +39,7 @@ import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -415,7 +415,7 @@ def run_single(scenario: dict, variant: str) -> dict:
         "scenario": name,
         "variant": variant,
         "status": "error" if "error" in raw_response else "ok",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "elapsed_seconds": round(elapsed, 1),
         "prompt": prompt,
         "response": assistant_message,
@@ -494,7 +494,7 @@ def save_results(results: list[dict], run_id: str):
     with open(run_dir / "summary.md", "w") as f:
         f.write(f"# Batch Run Summary\n\n")
         f.write(f"**Run ID:** {run_id}\n")
-        f.write(f"**Date:** {datetime.utcnow().isoformat()}\n")
+        f.write(f"**Date:** {datetime.now(timezone.utc).isoformat()}\n")
         f.write(f"**Episodes:** {len(results)}\n\n")
 
         f.write("## Results\n\n")
@@ -586,7 +586,7 @@ Examples:
 
     args = parser.parse_args()
 
-    run_id = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 
     # Load scenarios
     scenarios = load_all_scenarios()
