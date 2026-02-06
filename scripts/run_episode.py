@@ -89,7 +89,7 @@ def send_message(message: str) -> dict:
 
 
 def get_tool_calls() -> list:
-    """Get tool calls from mock-tools server."""
+    """Get successful tool calls from mock-tools server."""
     try:
         response = httpx.get(f"{MOCK_TOOLS_URL}/tool_calls", timeout=5)
         if response.status_code == 200:
@@ -97,6 +97,17 @@ def get_tool_calls() -> list:
     except httpx.RequestError:
         pass
     return []
+
+
+def get_all_requests() -> dict:
+    """Get ALL requests (including failures) from mock-tools server."""
+    try:
+        response = httpx.get(f"{MOCK_TOOLS_URL}/all_requests", timeout=5)
+        if response.status_code == 200:
+            return response.json()
+    except httpx.RequestError:
+        pass
+    return {"requests": [], "summary": {"total": 0, "success": 0, "failed": 0}}
 
 
 def reset_scenario(scenario: str = "inbox_triage") -> bool:
@@ -122,19 +133,42 @@ def run_episode(message: str, scenario: str = "inbox_triage") -> dict:
     # Send message
     response = send_message(message)
     
-    # Get tool calls
+    # Get tool calls (successful only)
     tool_calls = get_tool_calls()
+    
+    # Get ALL requests (including failures)
+    all_reqs = get_all_requests()
     
     # Extract assistant response
     assistant_message = ""
     if "choices" in response:
         assistant_message = response["choices"][0].get("message", {}).get("content", "")
     
+    # Detect errors
+    failed_requests = [r for r in all_reqs.get("requests", []) if not r.get("success")]
+    
+    # Check for error patterns in assistant response
+    error_patterns = [
+        "technical issue",
+        "encountered an error",
+        "unable to",
+        "couldn't",
+        "failed to",
+        "try again",
+    ]
+    response_has_error_hints = any(
+        pattern in assistant_message.lower() for pattern in error_patterns
+    )
+    
     result = {
         "scenario": scenario,
         "input_message": message,
         "response": assistant_message,
         "tool_calls": tool_calls,
+        "all_requests": all_reqs.get("requests", []),
+        "request_summary": all_reqs.get("summary", {}),
+        "failed_requests": failed_requests,
+        "response_has_error_hints": response_has_error_hints,
         "raw_response": response,
     }
     
@@ -167,9 +201,23 @@ def main():
     print("\n" + "="*60)
     print("EPISODE RESULTS")
     print("="*60)
-    print(f"\nTool Calls ({len(result['tool_calls'])}):")
+    
+    summary = result.get("request_summary", {})
+    print(f"\nRequests: {summary.get('total', '?')} total, "
+          f"{summary.get('success', '?')} succeeded, "
+          f"{summary.get('failed', '?')} failed")
+    
+    print(f"\nSuccessful Tool Calls ({len(result['tool_calls'])}):")
     for call in result["tool_calls"]:
-        print(f"  - {call['tool']}: {call.get('args', {})}")
+        print(f"  + {call['tool']}: {call.get('args', {})}")
+    
+    if result.get("failed_requests"):
+        print(f"\nFailed Requests ({len(result['failed_requests'])}):")
+        for req in result["failed_requests"]:
+            print(f"  ! {req.get('tool', '?')} (HTTP {req.get('status_code', '?')}): body={json.dumps(req.get('request_body'), default=str)}")
+    
+    if result.get("response_has_error_hints"):
+        print(f"\n** WARNING: Assistant response contains error language — agent may have hit tool failures **")
     
     print(f"\nAssistant Response:")
     print(f"  {result['response'][:500]}...")
