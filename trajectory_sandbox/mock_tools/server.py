@@ -253,7 +253,7 @@ def handle_exec(data: dict) -> dict:
         return _exec_success(json.dumps({"results": tasks}, indent=2))
 
     # Get a page (task/doc detail)
-    m2 = re.search(r"curl.*notion\.so/v1/pages/([a-f0-9-]+)", cmd, re.IGNORECASE)
+    m2 = re.search(r"curl.*notion\.so/v1/pages/([A-Za-z0-9_-]+)", cmd, re.IGNORECASE)
     if m2:
         page_id = m2.group(1)
         # Try tasks first, then documents
