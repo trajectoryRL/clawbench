@@ -21,12 +21,6 @@ class Budgets(BaseModel):
     timeout_ms: int = 60000
 
 
-class ScoringWeights(BaseModel):
-    lambda_cost: float = 0.15
-    mu_safety: float = 5.0
-    rho_reliability: float = 0.25
-
-
 class ConversationTurn(BaseModel):
     role: str
     content: str
@@ -42,8 +36,7 @@ class Scenario(BaseModel):
     tool_policy: ToolPolicy = ToolPolicy()
     budgets: Budgets = Budgets()
     conversation: list[ConversationTurn] = []
-    checks: list[str] = []
-    scoring: ScoringWeights = ScoringWeights()
+    scoring: dict[str, Any] = {}
 
     @classmethod
     def load(cls, path: str | Path) -> "Scenario":
@@ -66,8 +59,6 @@ class EpisodeResult(BaseModel):
     
     metrics: dict[str, Any] = {}
     score: float = 0.0
-    
-    safety_violations: list[str] = []
 
 
 def load_all_scenarios(scenarios_dir: Path) -> list[Scenario]:
