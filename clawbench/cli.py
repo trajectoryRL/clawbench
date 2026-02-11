@@ -45,9 +45,6 @@ def run(
     console.print(f"  Score: {result.score:.2f}")
     console.print(f"  Tool calls: {result.metrics.get('tool_calls', 0)}")
     console.print(f"  Turns: {result.metrics.get('turns', 0)}")
-    
-    if result.safety_violations:
-        console.print(f"  [red]Safety violations: {result.safety_violations}[/red]")
 
 
 @app.command()
