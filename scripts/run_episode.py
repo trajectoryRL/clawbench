@@ -17,10 +17,15 @@ import os
 import shutil
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 import httpx
 import yaml
+
+# Allow imports from the clawbench package
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from clawbench.scoring import score_episode
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -217,6 +222,10 @@ def main():
                         help="Wait for services to be ready")
     parser.add_argument("--output", "-o", type=str,
                         help="Output file for results (JSON)")
+    parser.add_argument("--json", "-j", action="store_true",
+                        help="Output scored JSON to stdout (for validator integration)")
+    parser.add_argument("--workspace", type=str,
+                        help="Custom workspace directory (skips default workspace setup)")
     parser.add_argument("--list", "-l", action="store_true",
                         help="List available scenarios")
 
@@ -246,8 +255,20 @@ def main():
     message = args.message or default_prompt
 
     # Setup workspace files for this scenario/variant
-    if scenario_config:
+    # If --workspace is given, the caller already prepared the workspace (e.g.,
+    # validator wrote the pack's AGENTS.md there), so we skip the default setup
+    # but still point WORKSPACE_DIR at it.
+    if args.workspace:
+        global WORKSPACE_DIR
+        WORKSPACE_DIR = Path(args.workspace)
+        WORKSPACE_DIR.mkdir(parents=True, exist_ok=True)
+    elif scenario_config:
         setup_workspace(scenario_config, args.variant)
+
+    # In --json mode, redirect verbose prints to stderr so only JSON goes to stdout
+    if args.json:
+        _real_stdout = sys.stdout
+        sys.stdout = sys.stderr
 
     if args.wait:
         if not wait_for_services():
@@ -257,7 +278,51 @@ def main():
     # Run episode
     result = run_episode(message, args.scenario)
 
-    # Print summary
+    # Restore stdout for JSON output
+    if args.json:
+        sys.stdout = _real_stdout
+
+    # --json mode: score and output JSON for validator integration
+    if args.json:
+        tool_calls = result.get("tool_calls", [])
+        tool_counts = dict(Counter(tc["tool"] for tc in tool_calls))
+
+        # Build the result dict that scoring.py expects
+        scorable = {
+            "response": result.get("response", ""),
+            "tool_calls_raw": tool_calls,
+            "tool_calls_by_type": tool_counts,
+            "tool_calls_total": len(tool_calls),
+        }
+
+        # Score against scenario rubric
+        rubric = {}
+        score_val = 0.0
+        success = False
+
+        if scenario_config:
+            scoring_config = scenario_config.get("scoring")
+            if scoring_config:
+                score_result = score_episode(scorable, scoring_config)
+                score_val = score_result.get("score", 0.0)
+                success = score_result.get("failed", 1) == 0
+                rubric = score_result
+
+        output = {
+            "score": score_val,
+            "success": success,
+            "tool_calls": len(tool_calls),
+            "response": result.get("response", ""),
+            "rubric": rubric,
+        }
+
+        if result.get("response_has_error_hints"):
+            output["error"] = "Response contains error language"
+
+        print(json.dumps(output))
+        return result
+
+    # Normal mode: print human-readable summary
     print("\n" + "=" * 60)
     print("EPISODE RESULTS")
     print("=" * 60)
