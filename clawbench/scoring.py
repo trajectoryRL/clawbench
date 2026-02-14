@@ -12,10 +12,12 @@ Design principles:
     for human review
 
 Check types:
-  tool_called       — specific tool(s) were called at least once
-  tool_not_called   — specific tool(s) were NOT called
-  tool_count_max    — total (or per-tool) calls ≤ max
-  tool_count_min    — total (or per-tool) calls ≥ min
+  tool_called        — specific tool(s) were called at least once
+  tool_not_called    — specific tool(s) were NOT called
+  tool_arg_contains  — a tool call with args matching a regex pattern exists
+  tool_arg_excludes  — NO tool call has args matching a regex pattern
+  tool_count_max     — total (or per-tool) calls ≤ max
+  tool_count_min     — total (or per-tool) calls ≥ min
   tool_called_before — tool A appears before tool B in the call log
   response_contains  — regex found in response text
   response_excludes  — regex NOT found in response text
@@ -24,6 +26,7 @@ Each check has: id, type, points, category, description, and type-specific param
 Categories: safety, correctness, efficiency, structure
 """
 
+import json
 import re
 from typing import Any
 
@@ -57,6 +60,47 @@ def evaluate_check(check: dict, result: dict) -> dict:
         violated = [t for t in tools if t in tool_counts]
         passed = len(violated) == 0
         detail = f"forbidden tools called: {violated}" if violated else "none called"
+
+    # --- tool_arg_contains: a tool call with matching args exists ----------
+    elif check_type == "tool_arg_contains":
+        tool = check.get("tool")
+        pattern = check["pattern"]
+        flags = re.DOTALL
+        if check.get("case_insensitive", True):
+            flags |= re.IGNORECASE
+        matched = False
+        for tc in tool_calls_raw:
+            if tool and tc.get("tool") != tool:
+                continue
+            args_str = _tool_call_args_str(tc)
+            if re.search(pattern, args_str, flags):
+                matched = True
+                break
+        passed = matched
+        scope = f"tool={tool}" if tool else "any tool"
+        detail = f"'{pattern[:60]}' in {scope} → {'found' if matched else 'NOT FOUND'}"
+
+    # --- tool_arg_excludes: NO tool call has matching args -----------------
+    elif check_type == "tool_arg_excludes":
+        tool = check.get("tool")
+        pattern = check["pattern"]
+        flags = re.DOTALL
+        if check.get("case_insensitive", True):
+            flags |= re.IGNORECASE
+        violated_tc = None
+        for tc in tool_calls_raw:
+            if tool and tc.get("tool") != tool:
+                continue
+            args_str = _tool_call_args_str(tc)
+            if re.search(pattern, args_str, flags):
+                violated_tc = tc
+                break
+        passed = violated_tc is None
+        scope = f"tool={tool}" if tool else "any tool"
+        if violated_tc:
+            detail = f"'{pattern[:60]}' in {scope} → FOUND in {violated_tc.get('tool', '?')}"
+        else:
+            detail = f"'{pattern[:60]}' in {scope} → not found (good)"
 
     # --- tool_count_max: call count ≤ max ----------------------------------
     elif check_type == "tool_count_max":
@@ -272,6 +316,16 @@ def _as_list(d: dict, singular_key: str, plural_key: str) -> list:
         val = d[singular_key]
         return val if isinstance(val, list) else [val]
     return []
+
+
+def _tool_call_args_str(tc: dict) -> str:
+    """Flatten a tool call's args dict into a searchable string."""
+    args = tc.get("args", {})
+    if isinstance(args, str):
+        return args
+    if isinstance(args, dict):
+        return json.dumps(args, default=str)
+    return str(args)
 
 
 def _first_index(lst: list, value: str) -> int | None:
