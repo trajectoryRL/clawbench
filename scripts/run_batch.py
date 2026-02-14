@@ -75,7 +75,6 @@ ALL_MOCK_TOOLS = [
     "web_search",
     "web_fetch",
     "read",
-    "session_status",
 ]
 
 # Tools to deny in the generated config (dangerous/unused in sandbox)
