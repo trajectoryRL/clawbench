@@ -1,1 +1,1 @@
-"""Test harness for running scenarios against OpenClaw."""
+"""Harness utilities for loading and running ClawBench scenarios."""
