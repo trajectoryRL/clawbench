@@ -56,18 +56,47 @@ def wait_for_services(timeout: int = 60) -> bool:
     """Wait for OpenClaw and mock-tools to be ready."""
     print("Waiting for services...")
     start = time.time()
+    mock_ready = False
+    openclaw_ready = False
 
     while time.time() - start < timeout:
-        try:
-            r1 = httpx.get(f"{MOCK_TOOLS_URL}/health", timeout=2)
-            if r1.status_code == 200:
-                health = r1.json()
-                print(f"  Mock tools: OK ({health.get('tools_available', '?')} tools, scenario={health.get('scenario', '?')})")
-                print("  OpenClaw: assuming ready")
-                return True
-        except httpx.RequestError:
-            time.sleep(1)
+        if not mock_ready:
+            try:
+                r = httpx.get(f"{MOCK_TOOLS_URL}/health", timeout=2)
+                if r.status_code == 200:
+                    health = r.json()
+                    print(f"  Mock tools: OK ({health.get('tools_available', '?')} tools, scenario={health.get('scenario', '?')})")
+                    mock_ready = True
+            except httpx.RequestError:
+                pass
 
+        if mock_ready and not openclaw_ready:
+            try:
+                r = httpx.get(f"{OPENCLAW_URL}/health", timeout=2)
+                if r.status_code == 200:
+                    print("  OpenClaw: OK")
+                    openclaw_ready = True
+            except httpx.RequestError:
+                pass
+
+        if mock_ready and openclaw_ready:
+            return True
+
+        elapsed = int(time.time() - start)
+        if elapsed > 0 and elapsed % 10 == 0:
+            status = []
+            if not mock_ready:
+                status.append("mock-tools")
+            if not openclaw_ready:
+                status.append("openclaw")
+            print(f"  Still waiting for {', '.join(status)}... ({elapsed}s)")
+
+        time.sleep(1)
+
+    if not mock_ready:
+        print("  TIMEOUT: mock-tools not ready")
+    if not openclaw_ready:
+        print("  TIMEOUT: OpenClaw not ready")
     return False
 
 
