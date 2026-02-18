@@ -89,13 +89,15 @@ curl -s -X POST http://localhost:3001/tools/exec \
 
 All scenarios share the same universe — a tech lead with a realistic team, clients, calendar, and workload. USER.md fixtures use `{{PLACEHOLDER}}` templates (`{{USER_NAME}}`, `{{USER_ROLE}}`, `{{COMPANY}}`) so the user identity can be overridden at runtime via `--user-context`. Defaults: Alex Chen, Product Manager at TechCorp.
 
-| Scenario | Difficulty | Description | Tools | Checks |
-|----------|:----------:|-------------|-------|:------:|
-| [`client_escalation`](#client_escalation) | Hard | P0 client issue hits on a busy Friday. Triage across email, Slack, tasks, calendar. | exec, slack, memory, web, read | 15 |
-| [`morning_brief`](#morning_brief) | Medium | 6:30am wake-up. Synthesize calendar + inbox + tasks into 90-second brief. | exec, slack, memory, read | 12 |
-| [`inbox_to_action`](#inbox_to_action) | Hard | Turn 20 overnight emails into a decision queue. Classify, draft, deduplicate. | exec, slack, memory, read | 14 |
-| [`team_standup`](#team_standup) | Medium | Standup in 5 min. Cross-reference Slack with a deliberately stale sprint board. | exec, slack, memory, read | 11 |
-| [`inbox_triage`](#inbox_triage) | Easy | Review inbox, draft replies for urgent emails. Smoke test. | exec, read | 6 |
+| Scenario | Difficulty | Weight | Description | Tools | Checks |
+|----------|:----------:|:------:|-------------|-------|:------:|
+| [`client_escalation`](#client_escalation) | Hard | 1.5 | P0 client issue hits on a busy Friday. Triage across email, Slack, tasks, calendar. | exec, slack, memory, web, read | 15 |
+| [`morning_brief`](#morning_brief) | Medium | 1.0 | 6:30am wake-up. Synthesize calendar + inbox + tasks into 90-second brief. | exec, slack, memory, read | 12 |
+| [`inbox_to_action`](#inbox_to_action) | Hard | 1.5 | Turn 20 overnight emails into a decision queue. Classify, draft, deduplicate. | exec, slack, memory, read | 14 |
+| [`team_standup`](#team_standup) | Medium | 1.0 | Standup in 5 min. Cross-reference Slack with a deliberately stale sprint board. | exec, slack, memory, read | 11 |
+| [`inbox_triage`](#inbox_triage) | Easy | 1.0 | Review inbox, draft replies for urgent emails. Smoke test. | exec, read | 6 |
+
+> **Weights** are used by [TrajectoryRL](https://github.com/trajectoryRL/trajectoryrl) for weighted score aggregation. Safety-critical scenarios carry higher weight.
 
 ```bash
 # List all available scenarios
@@ -587,6 +589,19 @@ done
 
 # Results land in results/{timestamp}/ — diff the scores
 ```
+
+---
+
+## Roadmap
+
+- [x] 5 scenarios with regex-based scoring
+- [x] Mock tool server with deterministic fixtures
+- [x] Scenario weights and difficulty levels
+- [x] `{{PLACEHOLDER}}` identity templates for variation
+- [ ] **Hybrid LLM-as-judge scoring** — Add optional LLM-scored checks for semantic correctness and response quality. Regex stays for objective checks (safety, efficiency); LLM judge evaluates subjective checks (correctness, structure). Output: binary pass/fail per check for deterministic aggregation.
+- [ ] Hidden held-out scenarios (used for scoring but not published)
+- [ ] Fixture name variation per epoch (prevents hardcoded pattern matching)
+- [ ] `--json` output flag for `run_episode.py`
 
 ---
 
