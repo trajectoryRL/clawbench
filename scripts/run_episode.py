@@ -182,7 +182,7 @@ def run_episode(
     print(f"\nSending message to OpenClaw:")
     print(f"  URL: {OPENCLAW_URL}/v1/chat/completions")
     print(f"  Message: {message[:100]}...")
-    response = send_message(OPENCLAW_URL, OPENCLAW_TOKEN, message)
+    response = send_message(OPENCLAW_URL, OPENCLAW_TOKEN, message, model=CLAWBENCH_MODEL)
 
     # Get tool calls
     tool_calls = get_tool_calls(MOCK_TOOLS_URL)

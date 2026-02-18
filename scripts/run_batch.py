@@ -260,7 +260,7 @@ def run_single(scenario: dict, variant: str) -> dict:
 
     # Send message
     t0 = time.time()
-    raw_response = send_message(OPENCLAW_URL, OPENCLAW_TOKEN, prompt)
+    raw_response = send_message(OPENCLAW_URL, OPENCLAW_TOKEN, prompt, model=CLAWBENCH_MODEL)
     elapsed = time.time() - t0
 
     # Collect tool data

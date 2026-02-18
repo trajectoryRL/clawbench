@@ -6,6 +6,7 @@ Both scripts import from this module for service interaction, scenario
 loading, and workspace setup.
 """
 
+import os
 import shutil
 import time
 from pathlib import Path
@@ -19,6 +20,7 @@ import yaml
 DEFAULT_OPENCLAW_URL = "http://localhost:18790"
 DEFAULT_OPENCLAW_TOKEN = "sandbox-token-12345"
 DEFAULT_MOCK_TOOLS_URL = "http://localhost:3001"
+DEFAULT_MODEL = "anthropic/claude-sonnet-4-6"
 
 
 # ---------------------------------------------------------------------------
@@ -73,8 +75,11 @@ def wait_for_services(mock_url: str, openclaw_url: str, timeout: int = 120) -> b
     return False
 
 
-def send_message(openclaw_url: str, token: str, message: str, timeout: int = 180) -> dict:
+def send_message(openclaw_url: str, token: str, message: str, model: str | None = None, timeout: int = 180) -> dict:
     """Send a message to OpenClaw via OpenAI-compatible API."""
+    if model is None:
+        model = os.getenv("CLAWBENCH_MODEL", DEFAULT_MODEL)
+
     url = f"{openclaw_url}/v1/chat/completions"
 
     headers = {
@@ -83,7 +88,7 @@ def send_message(openclaw_url: str, token: str, message: str, timeout: int = 180
     }
 
     payload = {
-        "model": "anthropic/claude-sonnet-4-5-20250929",
+        "model": model,
         "messages": [{"role": "user", "content": message}],
         "stream": False,
     }
