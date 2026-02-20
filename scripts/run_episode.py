@@ -353,6 +353,8 @@ def main():
     parser.add_argument("--user-context", type=str, default=None,
                         help="JSON dict of user identity overrides for {{PLACEHOLDER}} substitution "
                              "in workspace files (e.g., USER.md). Merges with scenario defaults.")
+    parser.add_argument("--seed", type=int, default=0,
+                        help="Per-run seed passed by the validator harness for variation across runs")
     parser.add_argument("--list", "-l", action="store_true",
                         help="List available scenarios")
 
