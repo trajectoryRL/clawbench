@@ -27,7 +27,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from clawbench.scoring import score_episode
 from clawbench.runner import (
-    DEFAULT_OPENCLAW_URL, DEFAULT_OPENCLAW_TOKEN, DEFAULT_MOCK_TOOLS_URL,
+    DEFAULT_OPENCLAW_URL, DEFAULT_OPENCLAW_TOKEN, DEFAULT_MOCK_TOOLS_URL, DEFAULT_MODEL,
     wait_for_services, send_message, get_tool_calls, get_all_requests,
     reset_scenario, setup_workspace, load_scenario,
 )
@@ -46,7 +46,7 @@ WORKSPACE_DIR = SANDBOX_DIR / "workspace"
 OPENCLAW_URL = os.getenv("OPENCLAW_URL", DEFAULT_OPENCLAW_URL)
 OPENCLAW_TOKEN = os.getenv("OPENCLAW_GATEWAY_TOKEN", DEFAULT_OPENCLAW_TOKEN)
 MOCK_TOOLS_URL = os.getenv("MOCK_TOOLS_URL", DEFAULT_MOCK_TOOLS_URL)
-CLAWBENCH_MODEL = os.getenv("CLAWBENCH_MODEL", "anthropic/claude-sonnet-4-5-20250929")
+CLAWBENCH_MODEL = os.getenv("CLAWBENCH_MODEL", DEFAULT_MODEL)
 
 
 def set_mock_user_context(user_context: dict) -> bool:

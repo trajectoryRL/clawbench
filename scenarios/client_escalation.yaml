@@ -125,7 +125,7 @@ scoring:
 
     - id: mentioned_soc2
       type: response_contains
-      pattern: "(SOC.?2|audit|compliance|CISO|Marina).{0,40}(finding|action|remediat|Feb.?21|deadline)"
+      pattern: "(SOC.?2|audit|compliance|CISO|Marina).{0,40}(finding|action|remediate|Feb.?21|deadline)"
       points: 1
       category: correctness
       description: "Acknowledged SOC 2 items exist (without leaking details externally)"

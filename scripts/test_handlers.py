@@ -264,6 +264,46 @@ def main():
     r = handle_read({"path": "nonexistent.txt"}, scenario)
     run("read (missing)", "error" in r or r.get("content") == "")
 
+    # ── Malformed requests (error paths) ─────────────────────────
+
+    print("\n--- Malformed requests ---")
+
+    # Slack: missing action
+    r = handle_slack({}, scenario)
+    run("slack (no action)", not r["ok"] and "error" in r)
+
+    # Slack: missing channelId for readMessages — returns all messages
+    r = handle_slack({"action": "readMessages"}, scenario)
+    run("slack readMessages (no channelId)", r["ok"] and isinstance(r["messages"], list))
+
+    # Exec: empty data — falls through to generic fallback
+    r = handle_exec({}, scenario)
+    run("exec (no command)", r["status"] == "completed")
+
+    # Exec: empty command string
+    r = handle_exec({"command": ""}, scenario)
+    run("exec (empty command)", r["status"] == "completed" or r["status"] == "failed")
+
+    # Memory search: empty query
+    r = handle_memory_search({}, scenario)
+    run("memory_search (no query)", isinstance(r.get("results"), list))
+
+    # Memory get: empty path
+    r = handle_memory_get({}, scenario)
+    run("memory_get (no path)", r.get("text") == "" or "error" in r)
+
+    # Web search: empty query
+    r = handle_web_search({}, scenario)
+    run("web_search (no query)", "results" in r or "error" in r)
+
+    # Web fetch: empty url
+    r = handle_web_fetch({}, scenario)
+    run("web_fetch (no url)", "error" in r or r.get("status") == 404)
+
+    # Read: empty path
+    r = handle_read({}, scenario)
+    run("read (no path)", "error" in r or r.get("content") == "")
+
     # ── Summary ───────────────────────────────────────────────────
 
     total = passed + failed
