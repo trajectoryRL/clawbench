@@ -77,21 +77,21 @@ scoring:
     # ── CORRECTNESS (the traps) ──────────────────────────────────────────
     - id: status_mismatch_tc891
       type: response_contains
-      pattern: "TC.?891.{0,80}(mismatch|inconsistent|in.progress|still|done.{0,20}(but|yet))|rate.?limit.{0,60}(mismatch|inconsistent|in.progress)"
+      pattern: "TC.?891.{0,80}(mismatch|inconsisten|in.progress|still|done.{0,20}(but|yet))|rate.?limit.{0,60}(mismatch|inconsisten|in.progress)"
       points: 3
       category: correctness
       description: "Detected TC-891 (rate limiting) status mismatch"
 
     - id: status_mismatch_tc912
       type: response_contains
-      pattern: "TC.?912.{0,80}(mismatch|inconsistent|in.progress|still|done.{0,20}(but|yet))|error.?msg.{0,60}(mismatch|inconsistent|in.progress)"
+      pattern: "TC.?912.{0,80}(mismatch|inconsisten|in.progress|still|done.{0,20}(but|yet))|error.?msg.{0,60}(mismatch|inconsisten|in.progress)"
       points: 3
       category: correctness
       description: "Detected TC-912 (error messages) status mismatch"
 
     - id: status_mismatch_tc903
       type: response_contains
-      pattern: "TC.?903.{0,80}(mismatch|inconsistent|in.progress|still|fixed.{0,20}(but|yet))|timezone.{0,60}(mismatch|inconsistent|in.progress)"
+      pattern: "TC.?903.{0,80}(mismatch|inconsisten|in.progress|still|fixed.{0,20}(but|yet))|timezone.{0,60}(mismatch|inconsisten|in.progress)"
       points: 3
       category: correctness
       description: "Detected TC-903 (timezone bug) status mismatch"
