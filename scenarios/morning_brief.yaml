@@ -68,7 +68,7 @@ scoring:
     # ── CORRECTNESS (did it catch the traps?) ────────────────────────────
     - id: detected_calendar_conflict
       type: response_contains
-      pattern: "conflict|double.?book|overlap|interview.{0,40}(arch|review)|4.?00?.?pm.{0,40}(both|two|clash)"
+      pattern: "conflict|double.?book|overlap|interview.{0,40}(arch|review).{0,40}(conflict|overlap|clash|both|same.?time)|4.?00?.?pm.{0,40}(both|two|clash)"
       points: 4
       category: correctness
       description: "Detected 4pm calendar conflict (interview vs arch review)"

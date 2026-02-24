@@ -46,7 +46,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from clawbench.scoring import score_episode, format_score_summary, format_score_markdown
 from clawbench.runner import (
-    DEFAULT_OPENCLAW_URL, DEFAULT_OPENCLAW_TOKEN, DEFAULT_MOCK_TOOLS_URL,
+    DEFAULT_OPENCLAW_URL, DEFAULT_OPENCLAW_TOKEN, DEFAULT_MOCK_TOOLS_URL, DEFAULT_MODEL,
     wait_for_services, send_message, get_tool_calls, get_all_requests,
     reset_scenario, setup_workspace, load_all_scenarios,
 )
@@ -67,7 +67,7 @@ RESULTS_DIR = SANDBOX_DIR / "results"
 OPENCLAW_URL = os.getenv("OPENCLAW_URL", DEFAULT_OPENCLAW_URL)
 OPENCLAW_TOKEN = os.getenv("OPENCLAW_GATEWAY_TOKEN", DEFAULT_OPENCLAW_TOKEN)
 MOCK_TOOLS_URL = os.getenv("MOCK_TOOLS_URL", DEFAULT_MOCK_TOOLS_URL)
-CLAWBENCH_MODEL = os.getenv("CLAWBENCH_MODEL", "anthropic/claude-sonnet-4-5-20250929")
+CLAWBENCH_MODEL = os.getenv("CLAWBENCH_MODEL", DEFAULT_MODEL)
 
 # All mock tools — must match the real OpenClaw tool surface (see mock_tools/server.py)
 ALL_MOCK_TOOLS = [
@@ -120,7 +120,7 @@ def generate_all_tools_config():
         },
         "tools": {
             "deny": DENY_TOOLS,
-            "allow": ALL_MOCK_TOOLS + ["read", "session_status"],
+            "allow": ALL_MOCK_TOOLS + ["session_status"],
         },
         "channels": {},
     }
@@ -276,7 +276,7 @@ def run_single(scenario: dict, variant: str) -> dict:
     summary = all_reqs.get("summary", {})
 
     # Detect error hints
-    error_patterns = ["technical issue", "encountered an error", "unable to", "couldn't", "failed to"]
+    error_patterns = ["technical issue", "encountered an error", "unable to", "couldn't", "failed to", "try again"]
     has_errors = any(p in assistant_message.lower() for p in error_patterns)
 
     # Tool call summary
