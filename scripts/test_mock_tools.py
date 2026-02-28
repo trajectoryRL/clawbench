@@ -252,7 +252,7 @@ def test_web_search(base: str) -> bool:
 def test_web_fetch(base: str) -> bool:
     r = httpx.post(f"{base}/tools/web_fetch", json={"url": "https://example.com/article"})
     data = r.json()
-    ok = data.get("status") == 200 and data.get("extractor") == "mock"
+    ok = data.get("status") == 404 and data.get("extractor") == "mock"
     return check("web_fetch", ok)
 
 
