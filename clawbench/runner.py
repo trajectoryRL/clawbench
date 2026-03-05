@@ -75,8 +75,21 @@ def wait_for_services(mock_url: str, openclaw_url: str, timeout: int = 120) -> b
     return False
 
 
-def send_message(openclaw_url: str, token: str, message: str, model: str | None = None, timeout: int = 180) -> dict:
-    """Send a message to OpenClaw via OpenAI-compatible API."""
+def send_message(
+    openclaw_url: str,
+    token: str,
+    message: str,
+    model: str | None = None,
+    timeout: int = 180,
+    session_key: str | None = None,
+) -> dict:
+    """Send a message to OpenClaw via OpenAI-compatible API.
+
+    Args:
+        session_key: Optional session key for deterministic session tracking.
+            Sent via x-openclaw-session-key header. Each scenario evaluation
+            should use a unique key to ensure fresh session isolation.
+    """
     if model is None:
         model = os.getenv("CLAWBENCH_MODEL", DEFAULT_MODEL)
 
@@ -86,6 +99,8 @@ def send_message(openclaw_url: str, token: str, message: str, model: str | None 
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
+    if session_key:
+        headers["x-openclaw-session-key"] = session_key
 
     payload = {
         "model": model,
@@ -100,6 +115,39 @@ def send_message(openclaw_url: str, token: str, message: str, model: str | None 
         return response.json()
     except httpx.RequestError as e:
         return {"error": str(e)}
+
+
+def extract_usage(response: dict) -> dict | None:
+    """Extract token usage from an OpenClaw chat completions response.
+
+    Reads the x_openclaw_usage field (detailed cache breakdown) if available,
+    falling back to the standard usage field. Returns None if no usage data.
+    """
+    # Prefer detailed usage with cache breakdown
+    detailed = response.get("x_openclaw_usage")
+    if detailed and isinstance(detailed, dict):
+        return {
+            "input_tokens": detailed.get("input_tokens", 0),
+            "output_tokens": detailed.get("output_tokens", 0),
+            "cache_read_tokens": detailed.get("cache_read_tokens", 0),
+            "cache_write_tokens": detailed.get("cache_write_tokens", 0),
+            "total_cost_usd": detailed.get("total_cost_usd", 0.0),
+        }
+
+    # Fall back to standard OpenAI usage field
+    usage = response.get("usage")
+    if usage and isinstance(usage, dict):
+        total = usage.get("total_tokens", 0)
+        if total > 0:
+            return {
+                "input_tokens": usage.get("prompt_tokens", 0),
+                "output_tokens": usage.get("completion_tokens", 0),
+                "cache_read_tokens": 0,
+                "cache_write_tokens": 0,
+                "total_cost_usd": 0.0,
+            }
+
+    return None
 
 
 def get_tool_calls(mock_url: str) -> list:

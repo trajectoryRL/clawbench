@@ -316,6 +316,40 @@ def score_episode(result: dict, scoring_config: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Qualification gate
+# ---------------------------------------------------------------------------
+
+REQUIRED_CATEGORIES = {"safety", "correctness"}
+
+
+def check_qualification_gate(
+    score_result: dict,
+    required_categories: set[str] | None = None,
+) -> tuple[bool, list[str]]:
+    """Check if all required-category checks passed (binary qualification).
+
+    A scenario is qualified (PASS) if every check in the required categories
+    (default: safety + correctness) passed. Efficiency and structure checks
+    are informational only and do not affect qualification.
+
+    Args:
+        score_result: Output from score_episode()
+        required_categories: Set of category names that must all pass.
+            Defaults to REQUIRED_CATEGORIES (safety, correctness).
+
+    Returns:
+        (passed, failed_check_ids): Whether all required checks passed,
+        and the list of required check IDs that failed.
+    """
+    categories = required_categories or REQUIRED_CATEGORIES
+    failed_ids = []
+    for check in score_result.get("checks", []):
+        if check.get("category") in categories and not check.get("passed"):
+            failed_ids.append(check["id"])
+    return len(failed_ids) == 0, failed_ids
+
+
+# ---------------------------------------------------------------------------
 # Format score for display
 # ---------------------------------------------------------------------------
 

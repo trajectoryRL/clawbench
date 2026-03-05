@@ -18,6 +18,7 @@ import os
 import re
 import shutil
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -29,7 +30,7 @@ from clawbench.scoring import score_episode
 from clawbench.runner import (
     DEFAULT_OPENCLAW_URL, DEFAULT_OPENCLAW_TOKEN, DEFAULT_MOCK_TOOLS_URL, DEFAULT_MODEL,
     wait_for_services, send_message, get_tool_calls, get_all_requests,
-    reset_scenario, setup_workspace, load_scenario,
+    reset_scenario, setup_workspace, load_scenario, extract_usage,
 )
 
 # ---------------------------------------------------------------------------
@@ -178,11 +179,21 @@ def run_episode(
         else:
             print("  Warning: Could not set user context on mock server")
 
+    # Generate unique session key for fresh session isolation
+    session_key = f"clawbench-{scenario}-{int(time.time() * 1000)}"
+
     # Send message
     print(f"\nSending message to OpenClaw:")
     print(f"  URL: {OPENCLAW_URL}/v1/chat/completions")
+    print(f"  Session: {session_key}")
     print(f"  Message: {message[:100]}...")
-    response = send_message(OPENCLAW_URL, OPENCLAW_TOKEN, message, model=CLAWBENCH_MODEL)
+    response = send_message(
+        OPENCLAW_URL, OPENCLAW_TOKEN, message,
+        model=CLAWBENCH_MODEL, session_key=session_key,
+    )
+
+    # Extract token usage from response
+    usage = extract_usage(response)
 
     # Get tool calls
     tool_calls = get_tool_calls(MOCK_TOOLS_URL)
@@ -214,6 +225,7 @@ def run_episode(
         "failed_requests": failed_requests,
         "response_has_error_hints": response_has_error_hints,
         "raw_response": response,
+        "usage": usage,
     }
 
     return result
@@ -365,6 +377,18 @@ def main():
             "rubric": rubric,
         }
 
+        # Add cost data if available (backward compatible — field is optional)
+        usage_data = result.get("usage")
+        if usage_data:
+            output["cost"] = {
+                "input_tokens": usage_data.get("input_tokens", 0),
+                "output_tokens": usage_data.get("output_tokens", 0),
+                "cache_read_tokens": usage_data.get("cache_read_tokens", 0),
+                "cache_write_tokens": usage_data.get("cache_write_tokens", 0),
+                "total_usd": usage_data.get("total_cost_usd", 0.0),
+                "model": CLAWBENCH_MODEL,
+            }
+
         if result.get("response_has_error_hints"):
             output["error"] = "Response contains error language"
 
@@ -392,6 +416,37 @@ def main():
 
     if result.get("response_has_error_hints"):
         print("\n** WARNING: Assistant response contains error language **")
+
+    # Score and gate display
+    if scenario_config:
+        scoring_config = scenario_config.get("scoring")
+        if scoring_config:
+            from clawbench.scoring import score_episode as _score, format_score_summary, check_qualification_gate
+            tool_calls_list = result.get("tool_calls", [])
+            tool_counts = dict(Counter(tc["tool"] for tc in tool_calls_list))
+            scorable = {
+                "response": result.get("response", ""),
+                "tool_calls_raw": tool_calls_list,
+                "tool_calls_by_type": tool_counts,
+                "tool_calls_total": len(tool_calls_list),
+            }
+            score_result = _score(scorable, scoring_config)
+            print(format_score_summary(score_result))
+
+            gate_passed, failed_ids = check_qualification_gate(score_result)
+            gate_str = "PASS (all safety + correctness checks passed)" if gate_passed else f"FAIL ({', '.join(failed_ids)})"
+            print(f"\n  Gate: {gate_str}")
+
+    # Cost display
+    usage_data = result.get("usage")
+    if usage_data:
+        total_usd = usage_data.get("total_cost_usd", 0)
+        print(f"\n  Cost: ${total_usd:.4f}")
+        print(f"    Input:       {usage_data.get('input_tokens', 0):,} tokens")
+        print(f"    Output:      {usage_data.get('output_tokens', 0):,} tokens")
+        print(f"    Cache read:  {usage_data.get('cache_read_tokens', 0):,} tokens")
+        print(f"    Cache write: {usage_data.get('cache_write_tokens', 0):,} tokens")
+        print(f"    Model:       {CLAWBENCH_MODEL}")
 
     print(f"\nAssistant Response:")
     resp_text = result["response"]
