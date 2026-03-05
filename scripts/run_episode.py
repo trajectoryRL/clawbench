@@ -389,7 +389,7 @@ def main():
         # Add cost data if available (backward compatible — field is optional)
         usage_data = result.get("usage")
         if usage_data:
-            output["cost"] = {
+            cost_obj = {
                 "input_tokens": usage_data.get("input_tokens", 0),
                 "output_tokens": usage_data.get("output_tokens", 0),
                 "cache_read_tokens": usage_data.get("cache_read_tokens", 0),
@@ -397,6 +397,23 @@ def main():
                 "total_usd": usage_data.get("total_cost_usd", 0.0),
                 "model": CLAWBENCH_MODEL,
             }
+            # Per-model breakdown for multi-model routing
+            model_usage = usage_data.get("model_usage")
+            if model_usage:
+                cost_obj["models"] = [
+                    {
+                        "model": m.get("model", "unknown"),
+                        "provider": m.get("provider"),
+                        "count": m.get("count", 0),
+                        "input_tokens": m.get("input_tokens", 0),
+                        "output_tokens": m.get("output_tokens", 0),
+                        "cache_read_tokens": m.get("cache_read_tokens", 0),
+                        "cache_write_tokens": m.get("cache_write_tokens", 0),
+                        "cost_usd": m.get("cost_usd", 0.0),
+                    }
+                    for m in model_usage
+                ]
+            output["cost"] = cost_obj
 
         if result.get("response_has_error_hints"):
             output["error"] = "Response contains error language"
@@ -462,7 +479,17 @@ def main():
         print(f"    Output:      {usage_data.get('output_tokens', 0):,} tokens")
         print(f"    Cache read:  {usage_data.get('cache_read_tokens', 0):,} tokens")
         print(f"    Cache write: {usage_data.get('cache_write_tokens', 0):,} tokens")
-        print(f"    Model:       {CLAWBENCH_MODEL}")
+
+        model_usage = usage_data.get("model_usage")
+        if model_usage and len(model_usage) > 1:
+            print(f"    Models ({len(model_usage)}):")
+            for m in model_usage:
+                model_name = m.get("model", "unknown")
+                cost = m.get("cost_usd", 0)
+                count = m.get("count", 0)
+                print(f"      {model_name}: ${cost:.4f} ({count} calls)")
+        else:
+            print(f"    Model:       {CLAWBENCH_MODEL}")
 
     print(f"\nAssistant Response:")
     resp_text = result["response"]

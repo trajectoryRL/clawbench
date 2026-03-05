@@ -122,17 +122,25 @@ def extract_usage(response: dict) -> dict | None:
 
     Reads the x_openclaw_usage field (detailed cache breakdown) if available,
     falling back to the standard usage field. Returns None if no usage data.
+
+    When per-model usage is available (multi-model routing), includes a
+    ``model_usage`` list with per-model token counts and costs.
     """
     # Prefer detailed usage with cache breakdown
     detailed = response.get("x_openclaw_usage")
     if detailed and isinstance(detailed, dict):
-        return {
+        result = {
             "input_tokens": detailed.get("input_tokens", 0),
             "output_tokens": detailed.get("output_tokens", 0),
             "cache_read_tokens": detailed.get("cache_read_tokens", 0),
             "cache_write_tokens": detailed.get("cache_write_tokens", 0),
             "total_cost_usd": detailed.get("total_cost_usd", 0.0),
         }
+        # Include per-model breakdown if available
+        model_usage = detailed.get("model_usage")
+        if model_usage and isinstance(model_usage, list):
+            result["model_usage"] = model_usage
+        return result
 
     # Fall back to standard OpenAI usage field
     usage = response.get("usage")
@@ -147,6 +155,30 @@ def extract_usage(response: dict) -> dict | None:
                 "total_cost_usd": 0.0,
             }
 
+    return None
+
+
+def get_session_usage(
+    openclaw_url: str,
+    token: str,
+    session_key: str,
+    timeout: int = 10,
+) -> dict | None:
+    """Query per-session cost summary from OpenClaw.
+
+    Calls GET /api/sessions/{key}/usage to retrieve aggregated token usage
+    and cost, including per-model breakdowns for multi-model sessions.
+
+    Returns the usage dict on success, or None on failure.
+    """
+    url = f"{openclaw_url}/api/sessions/{session_key}/usage"
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        response = httpx.get(url, headers=headers, timeout=timeout)
+        if response.status_code == 200:
+            return response.json()
+    except httpx.RequestError:
+        pass
     return None
 
 
