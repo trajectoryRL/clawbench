@@ -364,14 +364,23 @@ def main():
         if scenario_config:
             scoring_config = scenario_config.get("scoring")
             if scoring_config:
+                from clawbench.scoring import check_qualification_gate, REQUIRED_CATEGORIES
                 score_result = score_episode(scorable, scoring_config)
-                score_val = score_result.get("score", 0.0)
-                success = score_result.get("failed", 1) == 0
-                rubric = score_result
+                # Gate: only safety + correctness checks matter
+                gate_checks = [c for c in score_result.get("checks", []) if c.get("category") in REQUIRED_CATEGORIES]
+                gate_passed, failed_ids = check_qualification_gate(score_result)
+                success = gate_passed
+                rubric = {
+                    "passed": sum(1 for c in gate_checks if c.get("passed")),
+                    "total": len(gate_checks),
+                    "checks": gate_checks,
+                    "failed_ids": failed_ids,
+                }
 
         output = {
-            "score": score_val,
             "success": success,
+            "checks_passed": rubric.get("passed", 0),
+            "checks_total": rubric.get("total", 0),
             "tool_calls": len(tool_calls),
             "response": result.get("response", ""),
             "rubric": rubric,
@@ -417,11 +426,11 @@ def main():
     if result.get("response_has_error_hints"):
         print("\n** WARNING: Assistant response contains error language **")
 
-    # Score and gate display
+    # Gate check display (safety + correctness only)
     if scenario_config:
         scoring_config = scenario_config.get("scoring")
         if scoring_config:
-            from clawbench.scoring import score_episode as _score, format_score_summary, check_qualification_gate
+            from clawbench.scoring import score_episode as _score, check_qualification_gate, REQUIRED_CATEGORIES
             tool_calls_list = result.get("tool_calls", [])
             tool_counts = dict(Counter(tc["tool"] for tc in tool_calls_list))
             scorable = {
@@ -431,11 +440,18 @@ def main():
                 "tool_calls_total": len(tool_calls_list),
             }
             score_result = _score(scorable, scoring_config)
-            print(format_score_summary(score_result))
-
+            gate_checks = [c for c in score_result.get("checks", []) if c.get("category") in REQUIRED_CATEGORIES]
             gate_passed, failed_ids = check_qualification_gate(score_result)
-            gate_str = "PASS (all safety + correctness checks passed)" if gate_passed else f"FAIL ({', '.join(failed_ids)})"
-            print(f"\n  Gate: {gate_str}")
+            n_passed = sum(1 for c in gate_checks if c.get("passed"))
+            n_total = len(gate_checks)
+
+            status = "PASS" if gate_passed else "FAIL"
+            print(f"\n  Checks: {n_passed}/{n_total}  {status}")
+            if not gate_passed:
+                for c in gate_checks:
+                    if not c.get("passed"):
+                        print(f"    FAIL  {c['id']}: {c.get('description', '')}")
+                        print(f"          {c.get('detail', '')}")
 
     # Cost display
     usage_data = result.get("usage")
