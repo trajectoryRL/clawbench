@@ -30,7 +30,7 @@ from clawbench.scoring import score_episode
 from clawbench.runner import (
     DEFAULT_OPENCLAW_URL, DEFAULT_OPENCLAW_TOKEN, DEFAULT_MOCK_TOOLS_URL, DEFAULT_MODEL,
     wait_for_services, send_message, get_tool_calls, get_all_requests,
-    reset_scenario, setup_workspace, load_scenario, extract_usage,
+    reset_scenario, setup_workspace, load_scenario, extract_usage, get_session_usage,
 )
 
 # ---------------------------------------------------------------------------
@@ -192,8 +192,14 @@ def run_episode(
         model=CLAWBENCH_MODEL, session_key=session_key,
     )
 
-    # Extract token usage from response
+    # Extract token usage from response (inline x_openclaw_usage field)
     usage = extract_usage(response)
+
+    # Fallback: query the session usage endpoint if inline usage is missing/empty
+    if not usage or not usage.get("total_cost_usd"):
+        session_usage = get_session_usage(OPENCLAW_URL, OPENCLAW_TOKEN, session_key)
+        if session_usage:
+            usage = session_usage
 
     # Get tool calls
     tool_calls = get_tool_calls(MOCK_TOOLS_URL)
