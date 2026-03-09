@@ -157,6 +157,30 @@ def extract_usage(response: dict) -> dict | None:
     return None
 
 
+def get_session_usage(
+    openclaw_url: str,
+    token: str,
+    session_key: str,
+    timeout: int = 10,
+) -> dict | None:
+    """Query per-session cost summary from OpenClaw.
+
+    Calls GET /api/sessions/{key}/usage to retrieve aggregated token usage
+    and cost, including per-model breakdowns for multi-model sessions.
+
+    Returns the usage dict on success, or None on failure.
+    """
+    url = f"{openclaw_url}/api/sessions/{session_key}/usage"
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        response = httpx.get(url, headers=headers, timeout=timeout)
+        if response.status_code == 200:
+            return response.json()
+    except httpx.RequestError:
+        pass
+    return None
+
+
 def get_tool_calls(mock_url: str) -> list:
     """Get successful tool calls from mock-tools server."""
     try:
