@@ -196,7 +196,7 @@ def run_episode(
     usage = extract_usage(response)
 
     # Fallback: query the session usage endpoint if inline usage is missing/empty
-    if not usage or not usage.get("total_cost_usd"):
+    if not usage or usage.get("total_cost_usd") is None:
         session_usage = get_session_usage(OPENCLAW_URL, OPENCLAW_TOKEN, session_key)
         if session_usage:
             usage = session_usage
@@ -400,9 +400,13 @@ def main():
                 "output_tokens": usage_data.get("output_tokens", 0),
                 "cache_read_tokens": usage_data.get("cache_read_tokens", 0),
                 "cache_write_tokens": usage_data.get("cache_write_tokens", 0),
-                "total_usd": usage_data.get("total_cost_usd", 0.0),
+                "total_usd": usage_data.get("total_cost_usd"),
                 "model": CLAWBENCH_MODEL,
             }
+            # Include per-model breakdown if available from x_openclaw_usage
+            model_usage = usage_data.get("model_usage")
+            if model_usage:
+                cost_obj["models"] = model_usage
             output["cost"] = cost_obj
 
         if result.get("response_has_error_hints"):

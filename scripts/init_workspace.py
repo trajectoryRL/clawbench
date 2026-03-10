@@ -73,8 +73,7 @@ def main():
     CONFIG_DIR = Path(os.environ.get("CONFIG_DIR", "/config"))
 
     OPENCLAW_HOME = Path(os.environ.get("OPENCLAW_HOME", "/openclaw-home"))
-    # State/config dir is .openclaw under the user's home directory
-    OPENCLAW_CONFIG_DIR = Path.home() / ".openclaw"
+    OPENCLAW_CONFIG_DIR = OPENCLAW_HOME / ".openclaw"
 
     template = CONFIG_DIR / "openclaw.json.template"
     DEFAULT_LLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
@@ -88,8 +87,8 @@ def main():
         config_text = config_text.replace("${CLAWBENCH_LLM_API_KEY}", api_key)
         mock_tools_url = os.environ.get("MOCK_TOOLS_URL", "http://localhost:3001")
         config_text = config_text.replace("${MOCK_TOOLS_URL}", mock_tools_url)
-        # Write config to ~/.openclaw/openclaw.json
-        # (matches gateway's default state dir: $HOME/.openclaw)
+        # Write config to $OPENCLAW_HOME/.openclaw/openclaw.json
+        # (matches gateway's state dir resolved via OPENCLAW_HOME)
         os.makedirs(OPENCLAW_CONFIG_DIR, exist_ok=True)
         (OPENCLAW_CONFIG_DIR / "openclaw.json").write_text(config_text)
         print(f"[init] Generated openclaw.json -> {OPENCLAW_CONFIG_DIR}/openclaw.json (model={model})")
