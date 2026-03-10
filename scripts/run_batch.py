@@ -297,7 +297,7 @@ def run_single(scenario: dict, variant: str) -> dict:
 
     # Extract usage/cost
     usage = extract_usage(raw_response)
-    if not usage or not usage.get("total_cost_usd"):
+    if not usage or usage.get("total_cost_usd") is None:
         session_usage = get_session_usage(OPENCLAW_URL, OPENCLAW_TOKEN, session_key)
         if session_usage:
             usage = session_usage

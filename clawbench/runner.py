@@ -134,8 +134,25 @@ def send_message(
 def extract_usage(response: dict) -> dict | None:
     """Extract token usage from an OpenAI chat completions response.
 
+    Prefers the ``x_openclaw_usage`` extension field which includes real cost
+    data computed by the OpenClaw gateway using model pricing from its config.
+    Falls back to the standard ``usage`` field (tokens only, no cost).
+
     Returns None if no usage data is present.
     """
+    # Prefer x_openclaw_usage — it has real cost data from OpenClaw's pricing config
+    xclaw = response.get("x_openclaw_usage")
+    if xclaw and isinstance(xclaw, dict):
+        return {
+            "input_tokens": xclaw.get("input_tokens", 0),
+            "output_tokens": xclaw.get("output_tokens", 0),
+            "cache_read_tokens": xclaw.get("cache_read_tokens", 0),
+            "cache_write_tokens": xclaw.get("cache_write_tokens", 0),
+            "total_cost_usd": xclaw.get("total_cost_usd"),
+            "model_usage": xclaw.get("model_usage"),
+        }
+
+    # Fallback: standard OpenAI usage (tokens only, no cost)
     usage = response.get("usage")
     if usage and isinstance(usage, dict):
         prompt_tokens = usage.get("prompt_tokens", 0)
@@ -151,7 +168,7 @@ def extract_usage(response: dict) -> dict | None:
                 "output_tokens": completion_tokens,
                 "cache_read_tokens": cached,
                 "cache_write_tokens": 0,
-                "total_cost_usd": 0.0,
+                "total_cost_usd": None,
             }
 
     return None
