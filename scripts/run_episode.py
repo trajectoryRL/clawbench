@@ -388,6 +388,7 @@ def main():
             "checks_passed": rubric.get("passed", 0),
             "checks_total": rubric.get("total", 0),
             "tool_calls": len(tool_calls),
+            "tool_calls_raw": tool_calls,
             "response": result.get("response", ""),
             "rubric": rubric,
         }
