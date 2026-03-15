@@ -73,7 +73,7 @@ def main():
     CONFIG_DIR = Path(os.environ.get("CONFIG_DIR", "/config"))
 
     OPENCLAW_HOME = Path(os.environ.get("OPENCLAW_HOME", "/openclaw-home"))
-    OPENCLAW_CONFIG_DIR = OPENCLAW_HOME / ".openclaw"
+    OPENCLAW_CONFIG_DIR = OPENCLAW_HOME
 
     template = CONFIG_DIR / "openclaw.json.template"
     DEFAULT_LLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
