@@ -413,6 +413,10 @@ def main():
         if result.get("response_has_error_hints"):
             output["error"] = "Response contains error language"
 
+        output["input_message"] = result.get("input_message", "")
+        output["openclaw_raw_response"] = result.get("raw_response", {})
+        output["all_requests"] = result.get("all_requests", [])
+
         print(json.dumps(output))
         return result
 
