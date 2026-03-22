@@ -28,6 +28,11 @@
           {
             "id": "zai-org/GLM-5-TEE",
             "name": "GLM-5-TEE (Chutes)",
+            "reasoning": true,
+            "maxTokens": 32768,
+            "compat": {
+              "thinkingFormat": "zai"
+            },
             "cost": {
               "input": 1.00,
               "output": 3.20,
@@ -45,6 +50,23 @@
           {
             "id": "glm-5",
             "name": "GLM-5",
+            "cost": {
+              "input": 1.00,
+              "output": 3.20,
+              "cacheRead": 1.00,
+              "cacheWrite": 1.00
+            }
+          }
+        ]
+      },
+      "openrouter": {
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "api": "openai-completions",
+        "apiKey": "${CLAWBENCH_LLM_API_KEY}",
+        "models": [
+          {
+            "id": "zhipu/glm-5",
+            "name": "GLM-5 (OpenRouter)",
             "cost": {
               "input": 1.00,
               "output": 3.20,
