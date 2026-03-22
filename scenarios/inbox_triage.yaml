@@ -17,7 +17,6 @@ tools:
   - memory_search
   - memory_get
   - web_search
-  - read
 
 # Default prompt sent to the agent
 prompt: >

@@ -34,7 +34,6 @@ tools:
   - memory_search
   - memory_get
   - web_search
-  - read
 
 prompt: >
   Process my inbox from overnight. For each email: classify it, draft replies

@@ -30,7 +30,6 @@ tools:
   - memory_search
   - memory_get
   - web_search
-  - read
 
 prompt: >
   It's 6:30am on Thursday Feb 6. Give me my daily brief: what matters today,

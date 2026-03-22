@@ -31,7 +31,6 @@ tools:
   - memory_search
   - memory_get
   - web_search
-  - read
 
 prompt: >
   It's 8:55am, standup is in 5 minutes. Catch me up: what happened

@@ -151,7 +151,6 @@
       "memory_search",
       "memory_get",
       "web_search",
-      "read",
       "session_status"
     ]
   },
