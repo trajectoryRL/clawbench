@@ -25,12 +25,23 @@ description: >
   timeblocked schedule. Ask before making any calendar changes.
 
 tools:
-  - exec
-  - slack
+  - email_list
+  - email_read
+  - email_send
+  - email_draft
+  - calendar_list
+  - calendar_search
+  - calendar_create
+  - tasks_list
+  - task_get
+  - task_create
+  - task_update
+  - slack_channels
+  - slack_read
+  - slack_send
+  - slack_member
   - memory_search
-  - memory_get
-  - web_search
-  - read
+  - memory_read
 
 prompt: >
   It's 6:30am on Thursday Feb 6. Give me my daily brief: what matters today,

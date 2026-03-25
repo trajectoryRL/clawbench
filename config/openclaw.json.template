@@ -108,6 +108,7 @@
   "agents": {
     "defaults": {
       "workspace": "/workspace",
+      "skipBootstrap": true,
       "model": {
         "primary": "${CLAWBENCH_DEFAULT_MODEL}"
       }
@@ -146,12 +147,23 @@
       "apply_patch"
     ],
     "allow": [
-      "exec",
-      "slack",
+      "email_list",
+      "email_read",
+      "email_send",
+      "email_draft",
+      "calendar_list",
+      "calendar_search",
+      "calendar_create",
+      "tasks_list",
+      "task_get",
+      "task_create",
+      "task_update",
+      "slack_channels",
+      "slack_read",
+      "slack_send",
+      "slack_member",
       "memory_search",
-      "memory_get",
-      "web_search",
-      "read",
+      "memory_read",
       "session_status"
     ]
   },
