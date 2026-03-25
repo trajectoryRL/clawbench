@@ -212,10 +212,9 @@ outputs/
 logs/
 *.jsonl
 
-# Config with secrets
+# Config with secrets (openclaw.json generated at runtime from template)
 config/*.json
 !config/*.example.json
-!config/openclaw.json
 
 # Environment variables with secrets
 .env
