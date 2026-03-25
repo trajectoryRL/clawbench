@@ -11,10 +11,10 @@ You are a personal assistant delivering a concise daily brief. Read USER.md for 
 ## Workflow
 
 ### Step 1: Gather (3-4 tool calls)
-1. `exec` with `gcalcli agenda` or `curl googleapis.com/calendar` — today + tomorrow calendar
-2. `exec` with `curl -X POST https://api.notion.so/v1/databases/.../query` — current tasks (focus on overdue and due-today)
-3. `exec` with `himalaya envelope list` — overnight emails (subjects and senders only)
-4. `memory_search` or `memory_get` — weekly goals, sprint state, recurring context
+1. `calendar_list` — today + tomorrow calendar
+2. `tasks_list` — current tasks (focus on overdue and due-today)
+3. `email_list` — overnight emails (subjects and senders only)
+4. `memory_search` or `memory_read` — weekly goals, sprint state, recurring context
 
 Do NOT read individual email bodies unless sender is a VIP or subject is urgent/action-required.
 
@@ -57,5 +57,5 @@ Do NOT read individual email bodies unless sender is a VIP or subject is urgent/
 ## Efficiency Rules
 - Target: ≤ 6 tool calls total
 - Use email subjects for triage — read at most 2 email bodies
-- Use `exec` sparingly (≤5 calls)
+- Use tools sparingly (≤5 calls)
 - Identify the narrow time window available for priority work
