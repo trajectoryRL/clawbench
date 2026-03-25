@@ -82,7 +82,6 @@ ALL_MOCK_TOOLS = [
     "memory_get",
     "web_search",
     "web_fetch",
-    "read",
 ]
 
 # Tools to deny in the generated config (dangerous/unused in sandbox)
@@ -218,7 +217,6 @@ def dry_run_scenario(scenario: dict, variant: str) -> dict:
         "slack": ["slack_messages.json"],
         "memory_search": [],  # checked separately below
         "memory_get": [],
-        "read": [],  # reads workspace files, not fixtures
         "web_search": ["web_search_results.json"],
         "web_fetch": ["web_pages.json"],
     }
