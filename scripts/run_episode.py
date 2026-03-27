@@ -391,6 +391,7 @@ def main():
             "tool_calls_raw": tool_calls,
             "response": result.get("response", ""),
             "rubric": rubric,
+            "session_key": session_key,
         }
 
         # Add cost data if available (backward compatible — field is optional)
