@@ -668,6 +668,123 @@ TOOL_HANDLERS: dict[str, Any] = {
 
 
 # ============================================================================
+# MCP-compatible tool handlers — stable interface for agent environments
+# ============================================================================
+
+def _get_backend(scenario: str):
+    """Lazy-create a MockBackend for the given scenario."""
+    try:
+        # Try relative import first (works when PYTHONPATH=clawbench/)
+        from mcp.backend import MockBackend
+    except (ImportError, ModuleNotFoundError):
+        # Fall back to absolute import (works when repo root is on sys.path)
+        from clawbench.mcp.backend import MockBackend
+    return MockBackend(FIXTURES_PATH, scenario)
+
+
+def handle_email_list(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).email_list()
+
+def handle_email_read(data: dict, scenario: str) -> dict:
+    email = _get_backend(scenario).email_read(data.get("message_id", ""))
+    if not email:
+        return {"error": f"Message not found: {data.get('message_id')}"}
+    return email
+
+def handle_email_send(data: dict, scenario: str) -> dict:
+    result = _get_backend(scenario).email_send(
+        data.get("to", ""), data.get("subject", ""), data.get("body", ""),
+    )
+    result["_irreversible"] = True
+    return result
+
+def handle_email_draft(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).email_draft(
+        data.get("to", ""), data.get("subject", ""), data.get("body", ""),
+    )
+
+def handle_calendar_list(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).calendar_list()
+
+def handle_calendar_search(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).calendar_search(data.get("query", ""))
+
+def handle_calendar_create(data: dict, scenario: str) -> dict:
+    result = _get_backend(scenario).calendar_create(
+        data.get("title", ""), data.get("when", ""), data.get("duration", "30m"),
+    )
+    result["_irreversible"] = True
+    return result
+
+def handle_tasks_list(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).tasks_list(
+        data.get("status", ""), data.get("priority", ""), data.get("assignee", ""),
+    )
+
+def handle_task_get(data: dict, scenario: str) -> dict:
+    task = _get_backend(scenario).task_get(data.get("task_id", ""))
+    if not task:
+        return {"error": f"Task not found: {data.get('task_id')}"}
+    return task
+
+def handle_task_create(data: dict, scenario: str) -> dict:
+    result = _get_backend(scenario).task_create(
+        data.get("title", ""), data.get("priority", ""), data.get("assignee", ""),
+    )
+    result["_irreversible"] = True
+    return result
+
+def handle_task_update(data: dict, scenario: str) -> dict:
+    fields = {k: v for k, v in data.items() if k != "task_id"}
+    result = _get_backend(scenario).task_update(data.get("task_id", ""), **fields)
+    result["_irreversible"] = True
+    return result
+
+def handle_slack_channels(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).slack_channels()
+
+def handle_slack_read(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).slack_read(
+        data.get("channel", ""), data.get("limit", 50),
+    )
+
+def handle_slack_send(data: dict, scenario: str) -> dict:
+    result = _get_backend(scenario).slack_send(data.get("to", ""), data.get("message", ""))
+    result["_irreversible"] = True
+    return result
+
+def handle_slack_member(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).slack_member(data.get("user_id", ""))
+
+def handle_memory_read(data: dict, scenario: str) -> dict:
+    return _get_backend(scenario).memory_read(
+        data.get("path", ""), data.get("from_line", 1), data.get("num_lines", 100),
+    )
+
+
+# Register MCP tool handlers alongside legacy ones
+TOOL_HANDLERS.update({
+    "email_list": handle_email_list,
+    "email_read": handle_email_read,
+    "email_send": handle_email_send,
+    "email_draft": handle_email_draft,
+    "calendar_list": handle_calendar_list,
+    "calendar_search": handle_calendar_search,
+    "calendar_create": handle_calendar_create,
+    "tasks_list": handle_tasks_list,
+    "task_get": handle_task_get,
+    "task_create": handle_task_create,
+    "task_update": handle_task_update,
+    "slack_channels": handle_slack_channels,
+    "slack_read": handle_slack_read,
+    "slack_send": handle_slack_send,
+    "slack_member": handle_slack_member,
+    # memory_search already exists as a legacy handler
+    "memory_read": handle_memory_read,
+})
+
+
+# ============================================================================
 # Middleware — log every POST /tools/* request
 # ============================================================================
 

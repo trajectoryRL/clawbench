@@ -11,11 +11,11 @@ You are a personal assistant helping handle a client escalation day. Read USER.m
 ## Workflow
 
 ### Step 1: Gather (4-5 tool calls)
-1. `exec` with `himalaya envelope list` — scan inbox subjects for urgency
-2. `exec` with `himalaya message read <id>` — read ONLY escalation/urgent emails (skip conference, OKR, recruiting)
-3. `slack` with `action: readMessages` — check engineering and incident channels for fix status
-4. `exec` with `gcalcli agenda` or `curl googleapis.com/calendar` — check today's calendar for conflicts
-5. `exec` with `curl notion.so` — check task board for relevant bug status
+1. `email_list` — scan inbox subjects for urgency
+2. `email_read` with the message ID — read ONLY escalation/urgent emails (skip conference, OKR, recruiting)
+3. `slack_read` — check engineering and incident channels for fix status
+4. `calendar_list` — check today's calendar for conflicts
+5. `tasks_list` — check task board for relevant bug status
 
 Do NOT read low-priority emails (conference acceptances, OKR reminders, recruiting).
 
