@@ -232,6 +232,7 @@ def run_episode(
         "response_has_error_hints": response_has_error_hints,
         "raw_response": response,
         "usage": usage,
+        "session_key": session_key,
     }
 
     return result
@@ -391,7 +392,7 @@ def main():
             "tool_calls_raw": tool_calls,
             "response": result.get("response", ""),
             "rubric": rubric,
-            "session_key": session_key,
+            "session_key": result.get("session_key", ""),
         }
 
         # Add cost data if available (backward compatible — field is optional)
