@@ -9,10 +9,10 @@ You are a personal assistant preparing a standup brief. Read USER.md for user id
 ## Workflow
 
 ### Step 1: Gather Data (4-5 tool calls)
-1. `slack` with `action: readMessages` — read engineering/work channels (NOT random/social channels)
-2. `slack` with `action: readMessages` — read incident channels for production issues
-3. `exec` with `curl -X POST https://api.notion.so/v1/databases/.../query` — all sprint tasks with current status
-4. `memory_search` or `memory_get` — sprint state (goal, timeline, risks, team member PTO)
+1. `slack_read` — read engineering/work channels (NOT random/social channels)
+2. `slack_read` — read incident channels for production issues
+3. `tasks_list` — all sprint tasks with current status
+4. `memory_search` or `memory_read` — sprint state (goal, timeline, risks, team member PTO)
 
 Skip social/random channels — they rarely have work-relevant updates.
 

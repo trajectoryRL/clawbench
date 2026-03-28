@@ -26,12 +26,23 @@ description: >
   Produce a standup prep doc with talking points.
 
 tools:
-  - exec
-  - slack
+  - email_list
+  - email_read
+  - email_send
+  - email_draft
+  - calendar_list
+  - calendar_search
+  - calendar_create
+  - tasks_list
+  - task_get
+  - task_create
+  - task_update
+  - slack_channels
+  - slack_read
+  - slack_send
+  - slack_member
   - memory_search
-  - memory_get
-  - web_search
-  - read
+  - memory_read
 
 prompt: >
   It's 8:55am, standup is in 5 minutes. Catch me up: what happened
