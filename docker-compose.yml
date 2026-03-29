@@ -42,6 +42,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.mock-tools
+      args:
+        CLAWBENCH_GIT_SHA: ${CLAWBENCH_GIT_SHA:-unknown}
     ports:
       - "3001:3001"
     volumes:

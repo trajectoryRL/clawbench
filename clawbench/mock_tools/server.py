@@ -756,6 +756,9 @@ async def handle_tool(tool_name: str, request: Request):
 # Control Endpoints
 # ============================================================================
 
+CLAWBENCH_GIT_SHA = os.getenv("CLAWBENCH_GIT_SHA", "unknown")
+
+
 @app.get("/health")
 async def health():
     return {
@@ -763,6 +766,7 @@ async def health():
         "scenario": state.scenario,
         "tools_available": len(TOOL_HANDLERS),
         "tool_names": sorted(TOOL_HANDLERS.keys()),
+        "clawbench_sha": CLAWBENCH_GIT_SHA,
     }
 
 

@@ -5,6 +5,9 @@ WORKDIR /app
 COPY requirements-mock.txt .
 RUN pip install --no-cache-dir -r requirements-mock.txt
 
+ARG CLAWBENCH_GIT_SHA=unknown
+ENV CLAWBENCH_GIT_SHA=${CLAWBENCH_GIT_SHA}
+
 COPY clawbench/mock_tools/ ./mock_tools/
 
 EXPOSE 3001
