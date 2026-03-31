@@ -1,0 +1,51 @@
+[
+  {
+    "id": "c_501",
+    "name": "Rachel Moore",
+    "email": "rachel.moore@techcorp.com",
+    "role": "Engineering Manager — Platform Team",
+    "relationship": "hiring_manager"
+  },
+  {
+    "id": "c_502",
+    "name": "Dave Wilson",
+    "email": "dave.wilson@techcorp.com",
+    "role": "Staff Engineer — Platform Team",
+    "relationship": "interviewer"
+  },
+  {
+    "id": "c_503",
+    "name": "Lisa Chen",
+    "email": "lisa.chen@techcorp.com",
+    "role": "Senior Engineer — Platform Team",
+    "relationship": "interviewer"
+  },
+  {
+    "id": "c_504",
+    "name": "Mike Taylor",
+    "email": "mike.taylor@techcorp.com",
+    "role": "Senior Engineer — Platform Team",
+    "relationship": "interviewer"
+  },
+  {
+    "id": "c_505",
+    "name": "Emily Zhang",
+    "email": "emily.zhang@techcorp.com",
+    "role": "Engineer — Platform Team",
+    "relationship": "interviewer"
+  },
+  {
+    "id": "c_506",
+    "name": "Priya Patel",
+    "email": "priya.patel@techcorp.com",
+    "role": "Senior Engineer — Platform Team",
+    "relationship": "interviewer"
+  },
+  {
+    "id": "c_507",
+    "name": "Sarah Kim",
+    "email": "sarah.kim@techcorp.com",
+    "role": "Engineering Director",
+    "relationship": "skip_level"
+  }
+]

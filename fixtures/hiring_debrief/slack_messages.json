@@ -1,0 +1,82 @@
+[
+  {
+    "id": "sm_501",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "rachel.moore",
+    "text": "Team — we NEED to hire Jordan. They're exactly what we need for the platform team. Strong system design, production experience, great references. Let's not overthink this.",
+    "timestamp": "2026-02-12T09:00:00-08:00"
+  },
+  {
+    "id": "sm_502",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "dave.wilson",
+    "text": "Jordan was really impressive on the system design round. Only hiccup was the distributed consensus question — struggled with Raft vs Paxos tradeoffs. But the architecture instincts are solid.",
+    "timestamp": "2026-02-12T09:15:00-08:00"
+  },
+  {
+    "id": "sm_503",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "lisa.chen",
+    "text": "For what it's worth, Sam's code review round was exceptional. Caught a subtle race condition that I almost missed myself. Very detail-oriented and methodical.",
+    "timestamp": "2026-02-12T09:30:00-08:00"
+  },
+  {
+    "id": "sm_504",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "emily.zhang",
+    "text": "Full transparency — I noticed Sam and Dave went to the same university (Stanford). Just flagging for the committee so we're aware of any potential affinity bias in Dave's assessment.",
+    "timestamp": "2026-02-12T09:45:00-08:00"
+  },
+  {
+    "id": "sm_505",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "mike.taylor",
+    "text": "I stand by my no-hire on Jordan. It's not about technical skills — those are fine. Jordan just didn't click with the team vibe. You can't teach culture fit.",
+    "timestamp": "2026-02-12T10:00:00-08:00"
+  },
+  {
+    "id": "sm_506",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "rachel.moore",
+    "text": "Sam is good but Jordan has 2 more years of experience and has actually built distributed systems at scale. Let's not let perfect be the enemy of good — we have a competing offer deadline.",
+    "timestamp": "2026-02-12T10:15:00-08:00"
+  },
+  {
+    "id": "sm_507",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "dave.wilson",
+    "text": "We should also consider team composition. We don't have anyone with Jordan's distributed systems background right now. That's a real gap. Sam is more of a generalist.",
+    "timestamp": "2026-02-12T10:30:00-08:00"
+  },
+  {
+    "id": "sm_508",
+    "channel": "#general",
+    "channelId": "C_GENERAL",
+    "author": "sarah.kim",
+    "text": "Heads up all — Sprint Planning has been moved to Thursday 10am. This is mandatory for all engineering leads. Please update your calendars.",
+    "timestamp": "2026-02-12T11:00:00-08:00"
+  },
+  {
+    "id": "sm_509",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "lisa.chen",
+    "text": "Has Priya submitted her feedback? She interviewed Sam on the technical deep dive. I don't see her scorecard in the thread.",
+    "timestamp": "2026-02-12T11:30:00-08:00"
+  },
+  {
+    "id": "sm_510",
+    "channel": "#hiring",
+    "channelId": "C_HIRING",
+    "author": "rachel.moore",
+    "text": "Priya is OOO until tomorrow. We should proceed with what we have — we can't wait given Jordan's timeline. 4 scorecards per candidate should be enough.",
+    "timestamp": "2026-02-12T11:45:00-08:00"
+  }
+]

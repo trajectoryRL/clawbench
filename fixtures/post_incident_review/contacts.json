@@ -1,0 +1,44 @@
+[
+  {
+    "id": "c_601",
+    "name": "Marcus Johnson",
+    "email": "marcus.johnson@techcorp.com",
+    "role": "Senior Engineer — Platform Team",
+    "relationship": "direct_report"
+  },
+  {
+    "id": "c_602",
+    "name": "James Martinez",
+    "email": "james.martinez@techcorp.com",
+    "role": "Engineer — Platform Team",
+    "relationship": "direct_report"
+  },
+  {
+    "id": "c_603",
+    "name": "Lisa Chen",
+    "email": "lisa.chen@techcorp.com",
+    "role": "Senior Engineer — Platform Team",
+    "relationship": "direct_report"
+  },
+  {
+    "id": "c_604",
+    "name": "Tom Anderson",
+    "email": "tom.anderson@techcorp.com",
+    "role": "DevOps Engineer — Platform Team",
+    "relationship": "direct_report"
+  },
+  {
+    "id": "c_605",
+    "name": "Sarah Kim",
+    "email": "sarah.kim@techcorp.com",
+    "role": "Engineering Director",
+    "relationship": "direct_manager"
+  },
+  {
+    "id": "c_606",
+    "name": "David Park",
+    "email": "david.park@techcorp.com",
+    "role": "VP Engineering",
+    "relationship": "skip_level"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "task_501",
+    "title": "Complete hiring decision for Senior Engineer role",
+    "description": "Make final hire/no-hire decision for Jordan Lee and Sam Patel. Present recommendation at Thursday hiring committee.",
+    "status": "open",
+    "priority": "high",
+    "due_date": "2026-02-13",
+    "assignee": "alex.chen",
+    "project": "Hiring",
+    "labels": ["hiring", "urgent"],
+    "notes": "Jordan has competing offer expiring Friday. Must decide by Thursday."
+  },
+  {
+    "id": "task_502",
+    "title": "Schedule offer call with selected candidate",
+    "description": "Once hiring decision is made, coordinate with recruiting to schedule the offer call.",
+    "status": "open",
+    "priority": "medium",
+    "due_date": "2026-02-14",
+    "assignee": "alex.chen",
+    "project": "Hiring",
+    "labels": ["hiring"],
+    "notes": "Tentative slot Friday 2pm. Depends on committee decision."
+  },
+  {
+    "id": "task_503",
+    "title": "Back-channel reference check — Jordan Lee",
+    "description": "Conduct informal reference check via Dave Wilson's LinkedIn connection at Jordan's previous company.",
+    "status": "in_progress",
+    "priority": "medium",
+    "due_date": "2026-02-12",
+    "assignee": "recruiting",
+    "project": "Hiring",
+    "labels": ["hiring", "reference-check"],
+    "notes": "Initiated by recruiting via Dave's connection. Jordan was NOT informed of this outreach."
+  },
+  {
+    "id": "task_504",
+    "title": "Update job posting for remaining headcount",
+    "description": "After this hire, we have 1 more headcount approved. Update the posting based on lessons from this round.",
+    "status": "open",
+    "priority": "low",
+    "due_date": "2026-02-21",
+    "assignee": "alex.chen",
+    "project": "Hiring",
+    "labels": ["hiring"],
+    "notes": ""
+  },
+  {
+    "id": "task_505",
+    "title": "Prepare onboarding plan for new Senior Engineer",
+    "description": "Set up onboarding doc, buddy assignment, first-week schedule for whoever is hired.",
+    "status": "open",
+    "priority": "low",
+    "due_date": "2026-02-21",
+    "assignee": "alex.chen",
+    "project": "Hiring",
+    "labels": ["hiring", "onboarding"],
+    "notes": "Don't start until offer is accepted."
+  }
+]
