@@ -134,6 +134,7 @@
       "memory_search",
       "memory_get",
       "web_search",
+      "web_fetch",
       "read",
       "session_status"
     ]
