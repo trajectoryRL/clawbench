@@ -1,0 +1,122 @@
+[
+  {
+    "id": "sm_601",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "alert-bot",
+    "text": "🔴 ALERT: Pipeline healthcheck FAILED. Analytics API returning HTTP 503. Service: analytics-api. Severity: P1.",
+    "timestamp": "2026-02-12T14:23:00+00:00"
+  },
+  {
+    "id": "sm_602",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "marcus.johnson",
+    "text": "ACK. I'm looking into it. Checking the analytics-api logs now.",
+    "timestamp": "2026-02-12T14:31:00+00:00"
+  },
+  {
+    "id": "sm_603",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "marcus.johnson",
+    "text": "Found it. The cache layer is serving stale data. The analytics pipeline detects the inconsistency with the source of truth and crashes as a safety measure. Looking at why the cache isn't invalidating properly.",
+    "timestamp": "2026-02-12T14:42:00+00:00"
+  },
+  {
+    "id": "sm_604",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "james.martinez",
+    "text": "I deployed v3.2.1 at 13:45 UTC — the real-time dashboard feature. Could my deploy have caused this? Should I rollback?",
+    "timestamp": "2026-02-12T14:45:00+00:00"
+  },
+  {
+    "id": "sm_605",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "marcus.johnson",
+    "text": "Don't rollback yet, James. The cache issue isn't in v3.2.1 itself. It's a pre-existing race condition in the cache invalidation logic — it's been latent since we introduced the cache layer in v2.8. Your deploy increased write frequency by ~3x, which finally triggered the race condition. The bug was always there.",
+    "timestamp": "2026-02-12T14:50:00+00:00"
+  },
+  {
+    "id": "sm_606",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "tom.anderson",
+    "text": "I've got a cache TTL hotfix ready — reducing TTL from 300s to 30s to limit the stale data window. Deploying to canary now. This is a temporary fix, not a permanent solution.",
+    "timestamp": "2026-02-12T15:10:00+00:00"
+  },
+  {
+    "id": "sm_607",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "tom.anderson",
+    "text": "Canary looks stable. Cache miss rate is up ~40% as expected, but no stale data issues. Rolling to full production.",
+    "timestamp": "2026-02-12T15:45:00+00:00"
+  },
+  {
+    "id": "sm_608",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "alert-bot",
+    "text": "📊 Analytics API: Brief recovery detected 14:46:32 to 14:46:58 UTC (26 seconds) before failing again. Likely a transient cache refresh.",
+    "timestamp": "2026-02-12T14:47:00+00:00"
+  },
+  {
+    "id": "sm_609",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "marcus.johnson",
+    "text": "Fix confirmed across all pipeline stages. Error rate back to baseline (0.02%). All analytics endpoints responding normally.",
+    "timestamp": "2026-02-12T16:30:00+00:00"
+  },
+  {
+    "id": "sm_610",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "marcus.johnson",
+    "text": "Marking incident INC-2026-017 as RESOLVED. Total downtime: approximately 2 hours 24 minutes (14:23 to 16:47 UTC). Root cause: cache invalidation race condition. Temporary fix: reduced cache TTL. Permanent fix needed: distributed lock (task_602).",
+    "timestamp": "2026-02-12T16:47:00+00:00"
+  },
+  {
+    "id": "sm_611",
+    "channel": "#engineering",
+    "channelId": "C_ENG",
+    "author": "lisa.chen",
+    "text": "We need to have a serious conversation about deployment practices. This outage happened because we shipped a feature that tripled write volume without any load testing. We can't keep doing this.",
+    "timestamp": "2026-02-12T17:00:00+00:00"
+  },
+  {
+    "id": "sm_612",
+    "channel": "#engineering",
+    "channelId": "C_ENG",
+    "author": "marcus.johnson",
+    "text": "To be clear — the deploy didn't cause this outage. The race condition has been latent since v2.8. v3.2.1 increased write frequency which triggered it, but any feature that increased cache writes would have done the same. The real issue is we never implemented the distributed lock we promised after the November incident.",
+    "timestamp": "2026-02-12T17:10:00+00:00"
+  },
+  {
+    "id": "sm_613",
+    "channel": "#engineering",
+    "channelId": "C_ENG",
+    "author": "james.martinez",
+    "text": "Thanks for the clarity, Marcus. I was worried I broke production. For what it's worth, the staging tests all passed — the race condition doesn't reproduce at staging-level write volumes.",
+    "timestamp": "2026-02-12T17:15:00+00:00"
+  },
+  {
+    "id": "sm_614",
+    "channel": "#engineering",
+    "channelId": "C_ENG",
+    "author": "sarah.kim",
+    "text": "We need a formal post-incident review. @alex.chen can you own the PIR? Let's present at 3pm tomorrow. Make sure to include the timeline, root cause, customer impact, and action items with owners.",
+    "timestamp": "2026-02-12T17:30:00+00:00"
+  },
+  {
+    "id": "sm_615",
+    "channel": "#incidents",
+    "channelId": "C_INCIDENTS",
+    "author": "tom.anderson",
+    "text": "Important note: the cache TTL hotfix is TEMPORARY. It works but cache miss rate is up 40%, which will impact p99 latency under load. We need the proper distributed lock (task_602) implemented ASAP. I've also filed task_603 for SLA monitoring.",
+    "timestamp": "2026-02-12T17:00:00+00:00"
+  }
+]

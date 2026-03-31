@@ -1,0 +1,12 @@
+[
+  {
+    "id": "C_INCIDENTS",
+    "name": "#incidents",
+    "type": "public"
+  },
+  {
+    "id": "C_ENG",
+    "name": "#engineering",
+    "type": "public"
+  }
+]

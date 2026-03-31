@@ -1,0 +1,47 @@
+[
+  {
+    "id": "evt_601",
+    "title": "Daily Standup",
+    "start": "2026-02-13T09:00:00-08:00",
+    "end": "2026-02-13T09:30:00-08:00",
+    "location": "Zoom (recurring)",
+    "attendees": ["alex.chen@techcorp.com", "marcus.johnson@techcorp.com", "james.martinez@techcorp.com"],
+    "notes": "Platform team daily sync"
+  },
+  {
+    "id": "evt_602",
+    "title": "1:1 with VP Engineering (David Park)",
+    "start": "2026-02-13T13:00:00-08:00",
+    "end": "2026-02-13T13:30:00-08:00",
+    "location": "Zoom",
+    "attendees": ["alex.chen@techcorp.com", "david.park@techcorp.com"],
+    "notes": "Weekly 1:1. Good opportunity to preview PIR findings before presentation."
+  },
+  {
+    "id": "evt_603",
+    "title": "Post-Incident Review Presentation",
+    "start": "2026-02-13T15:00:00-08:00",
+    "end": "2026-02-13T16:00:00-08:00",
+    "location": "Main Conference Room",
+    "attendees": ["alex.chen@techcorp.com", "sarah.kim@techcorp.com", "marcus.johnson@techcorp.com", "david.park@techcorp.com", "lisa.chen@techcorp.com", "tom.anderson@techcorp.com"],
+    "notes": "Post-incident review for Feb 12 analytics outage. Alex presenting. PIR doc must be ready."
+  },
+  {
+    "id": "evt_604",
+    "title": "Sprint Planning",
+    "start": "2026-02-13T16:30:00-08:00",
+    "end": "2026-02-13T17:30:00-08:00",
+    "location": "Main Conference Room",
+    "attendees": ["alex.chen@techcorp.com", "sarah.kim@techcorp.com", "marcus.johnson@techcorp.com"],
+    "notes": "Sprint 14 planning. Should include PIR action items."
+  },
+  {
+    "id": "evt_605",
+    "title": "Team Retrospective",
+    "start": "2026-02-14T10:00:00-08:00",
+    "end": "2026-02-14T11:00:00-08:00",
+    "location": "Zoom",
+    "attendees": ["alex.chen@techcorp.com", "sarah.kim@techcorp.com", "marcus.johnson@techcorp.com", "james.martinez@techcorp.com", "lisa.chen@techcorp.com", "tom.anderson@techcorp.com"],
+    "notes": "Sprint 13 retro. Will also cover incident lessons learned."
+  }
+]

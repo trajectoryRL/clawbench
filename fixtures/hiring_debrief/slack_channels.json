@@ -1,0 +1,12 @@
+[
+  {
+    "id": "C_HIRING",
+    "name": "#hiring",
+    "type": "private"
+  },
+  {
+    "id": "C_GENERAL",
+    "name": "#general",
+    "type": "public"
+  }
+]
