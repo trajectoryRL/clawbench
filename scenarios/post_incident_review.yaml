@@ -138,7 +138,7 @@ scoring:
 
     - id: customer_impact_numbers
       type: response_contains
-      pattern: "(47.{0,10}(customer|enterprise|account)|customer.{0,10}47)"
+      pattern: "(47.{0,15}(customer|enterprise|account)|(customer|enterprise|account).{0,15}47)"
       points: 3
       category: correctness
       description: "Quantified customer impact (47 enterprise customers)"
