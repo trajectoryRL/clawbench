@@ -182,6 +182,10 @@ def run_episode(
     # Generate unique session key for fresh session isolation
     session_key = f"clawbench-{scenario}-{int(time.time() * 1000)}"
 
+    # Snapshot OpenClaw sessions dir to detect newly created session file
+    openclaw_sessions_dir = Path("/root/.openclaw/agents/main/sessions")
+    existing_sessions = set(openclaw_sessions_dir.glob("*.jsonl")) if openclaw_sessions_dir.exists() else set()
+
     # Send message
     print(f"\nSending message to OpenClaw:")
     print(f"  URL: {OPENCLAW_URL}/v1/chat/completions")
@@ -191,6 +195,14 @@ def run_episode(
         OPENCLAW_URL, OPENCLAW_TOKEN, message,
         model=CLAWBENCH_MODEL, session_key=session_key,
     )
+
+    # Find the session file OpenClaw created (UUID-named, not session_key-named)
+    session_file = None
+    if openclaw_sessions_dir.exists():
+        new_sessions = set(openclaw_sessions_dir.glob("*.jsonl")) - existing_sessions
+        if new_sessions:
+            session_file = max(new_sessions, key=lambda p: p.stat().st_mtime).name
+            print(f"  Session file: {session_file}")
 
     # Extract token usage from response (inline x_openclaw_usage field)
     usage = extract_usage(response)
@@ -233,6 +245,7 @@ def run_episode(
         "raw_response": response,
         "usage": usage,
         "session_key": session_key,
+        "session_file": session_file,
     }
 
     return result
@@ -393,6 +406,7 @@ def main():
             "response": result.get("response", ""),
             "rubric": rubric,
             "session_key": result.get("session_key", ""),
+            "session_file": result.get("session_file"),
         }
 
         # Add cost data if available (backward compatible — field is optional)
