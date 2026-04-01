@@ -120,6 +120,7 @@
       }
     },
     "deny": [
+      "exec",
       "process",
       "browser",
       "canvas",
@@ -129,7 +130,6 @@
       "apply_patch"
     ],
     "allow": [
-      "exec",
       "slack",
       "memory_search",
       "memory_get",
