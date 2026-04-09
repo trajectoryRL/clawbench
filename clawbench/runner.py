@@ -21,7 +21,7 @@ from openai import OpenAI
 DEFAULT_OPENCLAW_URL = "http://localhost:18790"
 DEFAULT_OPENCLAW_TOKEN = "sandbox-token-12345"
 DEFAULT_MOCK_TOOLS_URL = "http://localhost:3001"
-DEFAULT_MODEL = "zhipu/glm-5"
+DEFAULT_MODEL = "zhipu/glm-5.1"
 
 
 def _make_openai_client(
@@ -105,7 +105,7 @@ def send_message(
         openclaw_url: Gateway base URL.
         token: Gateway auth token (used as API key).
         message: User message content.
-        model: Model identifier (e.g. "openai/glm-5").
+        model: Model identifier (e.g. "openai/glm-5.1").
         timeout: Request timeout in seconds.
         session_key: Optional session key for deterministic session tracking.
     """

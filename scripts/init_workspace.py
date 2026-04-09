@@ -69,7 +69,7 @@ def main():
             print(f"[init] WARNING: Workspace file not found: {src}")
 
     # Generate openclaw.json from template with the selected model
-    DEFAULT_MODEL = "zhipu/glm-5"
+    DEFAULT_MODEL = "zhipu/glm-5.1"
     CONFIG_DIR = Path(os.environ.get("CONFIG_DIR", "/config"))
 
     # Resolve where to write openclaw.json so the gateway actually reads it.

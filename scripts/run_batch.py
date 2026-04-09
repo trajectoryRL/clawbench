@@ -102,8 +102,8 @@ DENY_TOOLS = [
 # ---------------------------------------------------------------------------
 def generate_all_tools_config():
     """Generate an openclaw.json that allows ALL mock tools (for batch testing)."""
-    # Derive provider name from model string (e.g. "zai-org/GLM-5-TEE" → "zai-org")
-    # Use full model string as API model ID (Chutes requires "zai-org/GLM-5-TEE", not just "GLM-5-TEE")
+    # Derive provider name from model string (e.g. "zai-org/GLM-5.1-TEE" → "zai-org")
+    # Use full model string as API model ID (Chutes requires "zai-org/GLM-5.1-TEE", not just "GLM-5.1-TEE")
     provider = CLAWBENCH_MODEL.split("/")[0] if "/" in CLAWBENCH_MODEL else "zhipu"
     model_id = CLAWBENCH_MODEL
     config = {

@@ -28,7 +28,7 @@ services:
     environment:
       - SCENARIO=${SCENARIO:-client_escalation}
       - VARIANT=${VARIANT:-optimized}
-      - CLAWBENCH_DEFAULT_MODEL=${CLAWBENCH_DEFAULT_MODEL:-zhipu/glm-5}
+      - CLAWBENCH_DEFAULT_MODEL=${CLAWBENCH_DEFAULT_MODEL:-zhipu/glm-5.1}
       - CLAWBENCH_LLM_BASE_URL=${CLAWBENCH_LLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4}
       - CLAWBENCH_LLM_API_KEY=${CLAWBENCH_LLM_API_KEY:-}
       - MOCK_TOOLS_URL=http://mock-tools:3001
@@ -84,7 +84,7 @@ services:
       - OPENAI_API_KEY=${CLAWBENCH_LLM_API_KEY:-}
       - OPENAI_BASE_URL=${CLAWBENCH_LLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4}
       - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-sandbox-token-12345}
-      - CLAWBENCH_DEFAULT_MODEL=${CLAWBENCH_DEFAULT_MODEL:-zhipu/glm-5}
+      - CLAWBENCH_DEFAULT_MODEL=${CLAWBENCH_DEFAULT_MODEL:-zhipu/glm-5.1}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
