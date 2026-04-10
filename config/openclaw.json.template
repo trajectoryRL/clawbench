@@ -70,8 +70,8 @@
         "apiKey": "${CLAWBENCH_LLM_API_KEY}",
         "models": [
           {
-            "id": "z-ai/glm-5",
-            "name": "GLM-5 (OpenRouter)",
+            "id": "z-ai/glm-5.1",
+            "name": "GLM-5.1 (OpenRouter)",
             "reasoning": true,
             "maxTokens": 32768,
             "compat": {
