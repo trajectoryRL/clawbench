@@ -26,6 +26,17 @@
         "apiKey": "${CLAWBENCH_LLM_API_KEY}",
         "models": [
           {
+            "id": "zai-org/GLM-5-TEE",
+            "name": "GLM-5-TEE (Chutes)",
+            "maxTokens": 32768,
+            "cost": {
+              "input": 1.00,
+              "output": 3.20,
+              "cacheRead": 1.00,
+              "cacheWrite": 1.00
+            }
+          },
+          {
             "id": "zai-org/GLM-5.1-TEE",
             "name": "GLM-5.1-TEE (Chutes)",
             "reasoning": true,
@@ -48,6 +59,17 @@
         "apiKey": "${CLAWBENCH_LLM_API_KEY}",
         "models": [
           {
+            "id": "glm-5",
+            "name": "GLM-5",
+            "maxTokens": 32768,
+            "cost": {
+              "input": 1.00,
+              "output": 3.20,
+              "cacheRead": 1.00,
+              "cacheWrite": 1.00
+            }
+          },
+          {
             "id": "glm-5.1",
             "name": "GLM-5.1",
             "reasoning": true,
@@ -69,6 +91,17 @@
         "api": "openai-completions",
         "apiKey": "${CLAWBENCH_LLM_API_KEY}",
         "models": [
+          {
+            "id": "z-ai/glm-5",
+            "name": "GLM-5 (OpenRouter)",
+            "maxTokens": 32768,
+            "cost": {
+              "input": 1.00,
+              "output": 3.20,
+              "cacheRead": 1.00,
+              "cacheWrite": 1.00
+            }
+          },
           {
             "id": "z-ai/glm-5.1",
             "name": "GLM-5.1 (OpenRouter)",

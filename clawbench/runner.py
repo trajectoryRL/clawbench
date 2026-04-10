@@ -105,7 +105,7 @@ def send_message(
         openclaw_url: Gateway base URL.
         token: Gateway auth token (used as API key).
         message: User message content.
-        model: Model identifier (e.g. "openai/glm-5.1").
+        model: Model identifier (e.g. "zhipu/glm-5" or "zhipu/glm-5.1").
         timeout: Request timeout in seconds.
         session_key: Optional session key for deterministic session tracking.
     """
